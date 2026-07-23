@@ -87,6 +87,29 @@ body{
 .ph-l h1 i{color:var(--neon);font-size:15px}
 .ph-l p{font-size:10.5px;color:var(--txm);margin-top:4px}
 
+/* TABS */
+.tabbar{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.tabbtn{display:flex;align-items:center;gap:7px;padding:9px 16px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;background:rgba(255,255,255,.03);border:1px solid var(--glassb);color:var(--txm);transition:all .15s}
+.tabbtn:hover{color:#fff;border-color:rgba(255,107,0,.3)}
+.tabbtn.on{background:linear-gradient(135deg,rgba(255,107,0,.18),rgba(61,255,160,.1));border-color:var(--orange);color:#fff;box-shadow:0 0 14px rgba(255,107,0,.15)}
+
+@keyframes blinkWarn{0%,100%{box-shadow:0 0 0 rgba(255,207,61,0)}50%{box-shadow:0 0 22px rgba(255,207,61,.55)}}
+.blink-warn{animation:blinkWarn 1.4s infinite}
+.spinner{width:11px;height:11px;border:2px solid rgba(255,255,255,.15);border-top-color:var(--neon);border-radius:50%;display:inline-block;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* SETTINGS FORM */
+.ph-r{display:flex;gap:8px;flex-shrink:0}
+.sr{display:flex;align-items:center;padding:11px 0;border-bottom:1px solid rgba(255,255,255,.05);gap:8px;flex-wrap:wrap}
+.sr:last-child{border-bottom:none}
+.sr-i{flex:1;min-width:0}
+.sr-n{font-size:11.5px;font-weight:600;color:#fff}
+.sr-d{font-size:9.5px;color:var(--txm);margin-top:2px}
+.sr-inp{display:flex;align-items:center;gap:6px;flex-shrink:0;margin-left:auto}
+.si{width:76px;padding:6px 9px;border:1.5px solid var(--glassb);border-radius:8px;font-size:11.5px;font-weight:600;font-family:var(--mono);color:#fff;background:rgba(255,255,255,.03);text-align:center;outline:none}
+.si:focus{border-color:var(--orange)}
+.su{font-size:9.5px;color:var(--txm);font-weight:600}
+
 /* GRID */
 .g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
@@ -219,7 +242,7 @@ body.light .sb-foot p{color:#8b93a7}
   <div class="nav" onclick="go('trend',this)"><i class="fa-solid fa-chart-line"></i> Grafik Trend</div>
   <div class="nav" onclick="go('ai',this)"><i class="fa-solid fa-brain"></i> Prediksi AI</div>
   <div class="sb-sec">Peringatan &amp; Sensor</div>
-  <div class="nav" onclick="go('notif',this)"><i class="fa-solid fa-bell"></i> Notifikasi &amp; Alert <span class="nb" id="nb">0</span></div>
+  <div class="nav" onclick="go('notif',this)"><i class="fa-solid fa-bell"></i> Notifikasi <span class="nb" id="nb">(0)</span></div>
   <div class="nav" onclick="go('sensor',this)"><i class="fa-solid fa-microchip"></i> Status Sensor</div>
   <div class="sb-sec">Riwayat</div>
   <div class="nav" onclick="go('riwayat',this)"><i class="fa-solid fa-table-list"></i> Riwayat Produksi</div>
@@ -227,33 +250,50 @@ body.light .sb-foot p{color:#8b93a7}
 </aside>
 <div class="sb-overlay" id="overlay" onclick="closeSB()"></div>
 
-<header id="tb" class="glass" style="border-radius:0">
+<header id="tb" style="border-radius:0;background:linear-gradient(100deg,#1a0a00,#0d0d0d 65%);border-bottom:1px solid rgba(255,107,0,.25);box-shadow:0 2px 20px rgba(0,0,0,.4)">
   <button id="ham" onclick="toggleSB()"><i class="fa-solid fa-bars"></i></button>
-  <div class="tb-title"><h2 id="ptitle">Dashboard Utama</h2><p>Pemantauan real-time proses pirolisis &middot; Update tiap 5 detik</p></div>
+  <div class="tb-title"><h2 id="ptitle" style="display:flex;align-items:center;gap:7px">🔥 PYRO-AI <span style="font-size:9px;color:var(--txm);font-weight:600;background:rgba(255,107,0,.12);border:1px solid rgba(255,107,0,.25);padding:1px 6px;border-radius:20px">v1.0</span></h2><p id="psub">Pemantauan real-time proses pirolisis &middot; Update tiap 5 detik</p></div>
+  <button class="btn btn-ghost" onclick="exportPDF()"><i class="fa-solid fa-file-pdf"></i> <span class="lbl">Ekspor PDF</span></button>
   <button class="btn btn-neon" onclick="refreshData()"><i class="fa-solid fa-rotate-right"></i> <span class="lbl">REFRESH DATA</span></button>
-  <div class="clk" id="clk">--:--:--</div>
+  <div style="display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.03);border:1px solid rgba(255,107,0,.15);padding:5px 10px;border-radius:20px;flex-shrink:0">
+    <span style="display:flex;align-items:center;gap:5px;font-size:9.5px;font-weight:700;color:var(--neon)"><span class="dot-pulse" style="width:6px;height:6px"></span>Real-time</span>
+    <span class="clk" id="clk" style="font-size:11.5px">--:--:--</span>
+  </div>
 </header>
 
 <main id="main">
+<div class="tabbar">
+  <div class="tabbtn on" onclick="goTab('dash',this)"><i class="fa-solid fa-chart-simple"></i> Dashboard</div>
+  <div class="tabbtn" onclick="goTab('trend',this)"><i class="fa-solid fa-chart-line"></i> Analisis</div>
+  <div class="tabbtn" onclick="goTab('cfg',this)"><i class="fa-solid fa-sliders"></i> Pengaturan</div>
+</div>
 
 <!-- DASHBOARD -->
 <div id="pg-dash" class="pg on">
   <div class="ph"><div class="ph-l"><h1><i class="fa-solid fa-gauge-high"></i> Dashboard Utama</h1><p>Ringkasan metrik reaktor pirolisis secara real-time</p></div></div>
   <div class="g4">
-    <div class="glass mcard mc-tmp"><div class="mic mi-o"><i class="fa-solid fa-temperature-three-quarters"></i></div><div class="mlb">Suhu Reaktor</div><div class="mv"><span id="v-tmp">450</span><span> &deg;C</span></div><div class="mst ok" id="s-tmp"><i class="fa-solid fa-check"></i> Stabil</div></div>
-    <div class="glass mcard mc-prs"><div class="mic mi-b"><i class="fa-solid fa-gauge"></i></div><div class="mlb">Tekanan Reaktor</div><div class="mv"><span id="v-prs">1.2</span><span> atm</span></div><div class="mst ok" id="s-prs"><i class="fa-solid fa-check"></i> Aman</div></div>
-    <div class="glass mcard mc-flw"><div class="mic mi-g"><i class="fa-solid fa-wind"></i></div><div class="mlb">Aliran Gas</div><div class="mv"><span id="v-flw">8.5</span><span> m&sup3;/jam</span></div><div class="mst ok" id="s-flw"><i class="fa-solid fa-check"></i> Normal</div></div>
-    <div class="glass mcard mc-oil"><div class="mic mi-w"><i class="fa-solid fa-oil-can"></i></div><div class="mlb">Produksi Bio-oil</div><div class="mv"><span id="v-oil">42.3</span><span> L</span></div><div class="mst neu"><i class="fa-solid fa-arrow-up"></i> Akumulasi hari ini</div></div>
+    <div class="glass mcard mc-tmp"><div class="mic mi-o"><i class="fa-solid fa-temperature-three-quarters"></i></div><div class="mlb">Suhu Reaktor</div><div class="mv"><span id="v-tmp">450</span><span> &deg;C</span></div><div class="mst ok" id="s-tmp"><i class="fa-solid fa-check"></i> Stabil</div><div class="mtrend" id="t-tmp" style="font-size:9px;color:var(--txs);margin-top:3px">&mdash;</div></div>
+    <div class="glass mcard mc-prs"><div class="mic mi-b"><i class="fa-solid fa-gauge"></i></div><div class="mlb">Tekanan Reaktor</div><div class="mv"><span id="v-prs">1.2</span><span> atm</span></div><div class="mst ok" id="s-prs"><i class="fa-solid fa-check"></i> Aman</div><div class="mtrend" id="t-prs" style="font-size:9px;color:var(--txs);margin-top:3px">&mdash;</div></div>
+    <div class="glass mcard mc-flw"><div class="mic mi-g"><i class="fa-solid fa-wind"></i></div><div class="mlb">Aliran Gas</div><div class="mv"><span id="v-flw">8.5</span><span> m&sup3;/jam</span></div><div class="mst ok" id="s-flw"><i class="fa-solid fa-check"></i> Normal</div><div class="mtrend" id="t-flw" style="font-size:9px;color:var(--txs);margin-top:3px">&mdash;</div></div>
+    <div class="glass mcard mc-oil"><div class="mic mi-w"><i class="fa-solid fa-oil-can"></i></div><div class="mlb">Produksi Bio-oil</div><div class="mv"><span id="v-oil">42.3</span><span> L</span></div><div class="mst neu"><i class="fa-solid fa-arrow-up"></i> Akumulasi hari ini</div><div class="mtrend" id="t-oil" style="font-size:9px;color:var(--txs);margin-top:3px">&mdash;</div></div>
+  </div>
+  <div class="g3">
+    <div class="glass c" style="text-align:center"><div class="ct" style="justify-content:center"><i class="fa-solid fa-gauge-high"></i> Gauge Suhu</div><div class="cw" style="height:130px"><canvas id="gg-tmp"></canvas></div><div style="font-family:var(--mono);font-size:18px;font-weight:700;color:var(--orange);margin-top:-6px" id="gg-tmp-v">454°C</div><div style="font-size:9px;color:var(--txm)">Rentang 0&ndash;700&deg;C</div></div>
+    <div class="glass c" style="text-align:center"><div class="ct" style="justify-content:center"><i class="fa-solid fa-gauge-high"></i> Gauge Tekanan</div><div class="cw" style="height:130px"><canvas id="gg-prs"></canvas></div><div style="font-family:var(--mono);font-size:18px;font-weight:700;color:var(--blue);margin-top:-6px" id="gg-prs-v">1.2 atm</div><div style="font-size:9px;color:var(--txm)">Rentang 0&ndash;2 atm</div></div>
+    <div class="glass c" style="text-align:center"><div class="ct" style="justify-content:center"><i class="fa-solid fa-gauge-high"></i> Gauge Aliran Gas</div><div class="cw" style="height:130px"><canvas id="gg-flw"></canvas></div><div style="font-family:var(--mono);font-size:18px;font-weight:700;color:var(--neon);margin-top:-6px" id="gg-flw-v">8.7 m&sup3;/jam</div><div style="font-size:9px;color:var(--txm)">Rentang 0&ndash;15 m&sup3;/jam</div></div>
   </div>
   <div class="g2">
-    <div class="glass c"><div class="ct"><i class="fa-solid fa-chart-line"></i> Suhu vs Waktu <span class="ct-r">Live · 5 detik</span></div><div class="cw lg"><canvas id="ch-tmp"></canvas></div></div>
+    <div class="glass c"><div class="ct"><i class="fa-solid fa-chart-line"></i> Suhu vs Waktu <span class="ct-r">Live · 5 detik</span></div>
+      <div style="display:flex;gap:6px;margin-bottom:8px" id="tog-tmp"></div>
+      <div class="cw lg"><canvas id="ch-tmp"></canvas></div></div>
     <div class="glass c"><div class="ct"><i class="fa-solid fa-chart-line"></i> Tekanan vs Waktu <span class="ct-r">Live · 5 detik</span></div><div class="cw lg"><canvas id="ch-prs"></canvas></div></div>
   </div>
   <div class="g2">
-    <div class="glass c"><div class="ct"><i class="fa-solid fa-chart-column"></i> Produksi Harian</div><div class="cw md"><canvas id="ch-daily"></canvas></div></div>
+    <div class="glass c"><div class="ct"><i class="fa-solid fa-chart-column"></i> Produksi Harian <span class="ct-r">Stacked</span></div><div class="cw md"><canvas id="ch-daily"></canvas></div></div>
     <div class="glass c">
       <div class="ct"><i class="fa-solid fa-bell"></i> Notifikasi Terbaru <span class="ct-r" id="notif-cnt">0</span></div>
-      <div class="notif-list" id="notif-mini" style="max-height:180px"></div>
+      <div class="notif-list" id="notif-mini" style="max-height:150px"></div>
+      <button class="btn btn-ghost" style="margin-top:9px;width:100%;justify-content:center" onclick="markAllRead()"><i class="fa-solid fa-check-double"></i> Tandai Semua Dibaca</button>
     </div>
   </div>
 </div>
@@ -268,13 +308,13 @@ body.light .sb-foot p{color:#8b93a7}
 
 <!-- AI PREDIKSI -->
 <div id="pg-ai" class="pg">
-  <div class="ph"><div class="ph-l"><h1><i class="fa-solid fa-brain"></i> Prediksi AI</h1><p>Estimasi yield berdasarkan data sensor terkini</p></div></div>
+  <div class="ph"><div class="ph-l"><h1><i class="fa-solid fa-brain"></i> Prediksi AI</h1><p>Estimasi yield berdasarkan data sensor terkini <span class="spinner" id="predSpin" style="margin-left:6px"></span></p></div></div>
   <div class="pred-grid mb">
-    <div class="glass pred-card g"><div class="pred-lb">Prediksi Bio-oil</div><div class="pred-v" id="p-oil">42.5 kg</div><div class="pred-delta ok" id="p-oil-d"><i class="fa-solid fa-arrow-up"></i> +2.3% dari target</div><span class="pred-status ps-g" id="p-oil-s">ON TRACK</span></div>
-    <div class="glass pred-card y"><div class="pred-lb">Prediksi Syngas</div><div class="pred-v" id="p-gas">18.2 m&sup3;</div><div class="pred-delta warn" id="p-gas-d"><i class="fa-solid fa-arrow-down"></i> -1.1% dari target</div><span class="pred-status ps-y" id="p-gas-s">WARNING</span></div>
-    <div class="glass pred-card n"><div class="pred-lb">Prediksi Biochar</div><div class="pred-v" id="p-char">15.8 kg</div><div class="pred-delta neu" id="p-char-d"><i class="fa-solid fa-minus"></i> Stabil</div><span class="pred-status ps-g" id="p-char-s">STABIL</span></div>
+    <div class="glass pred-card g"><div class="pred-lb">Prediksi Bio-oil</div><div class="pred-v" id="p-oil">42.5 kg</div><div class="pred-delta ok" id="p-oil-d"><i class="fa-solid fa-arrow-up"></i> +2.3% dari target</div><span class="pred-status ps-g" id="p-oil-s">ON TRACK</span><div style="font-size:9px;color:var(--txm);margin-top:6px">Akurasi: <strong style="color:var(--neon)">94.7%</strong></div></div>
+    <div class="glass pred-card y blink-warn"><div class="pred-lb">Prediksi Syngas</div><div class="pred-v" id="p-gas">18.2 m&sup3;</div><div class="pred-delta warn" id="p-gas-d"><i class="fa-solid fa-arrow-down"></i> -1.1% dari target</div><span class="pred-status ps-y" id="p-gas-s">WARNING</span><div style="font-size:9px;color:var(--txm);margin-top:6px">Akurasi: <strong style="color:var(--yellow)">88.3%</strong></div></div>
+    <div class="glass pred-card n"><div class="pred-lb">Prediksi Biochar</div><div class="pred-v" id="p-char">15.8 kg</div><div class="pred-delta neu" id="p-char-d"><i class="fa-solid fa-minus"></i> Stabil</div><span class="pred-status ps-g" id="p-char-s">STABIL</span><div style="font-size:9px;color:var(--txm);margin-top:6px">Akurasi: <strong style="color:var(--neon)">91.2%</strong></div></div>
   </div>
-  <div class="glass c"><div class="ct"><i class="fa-solid fa-chart-line"></i> Model Prediksi Yield 24 Jam</div><div class="cw xl"><canvas id="ch-pred"></canvas></div></div>
+  <div class="glass c"><div class="ct"><i class="fa-solid fa-chart-line"></i> Prediksi Yield 24 Jam ke Depan <span class="ct-r">Area &middot; Upper/Lower Bound</span></div><div class="cw xl"><canvas id="ch-pred"></canvas></div></div>
 </div>
 
 <!-- NOTIFIKASI -->
@@ -317,6 +357,30 @@ body.light .sb-foot p{color:#8b93a7}
   </div>
 </div>
 
+<!-- PENGATURAN -->
+<div id="pg-cfg" class="pg">
+  <div class="ph">
+    <div class="ph-l"><h1><i class="fa-solid fa-sliders"></i> Pengaturan Threshold</h1><p>Atur batas ambang sensor untuk logika alarm &amp; notifikasi</p></div>
+    <div class="ph-r"><button class="btn btn-neon" onclick="saveCfg()"><i class="fa-solid fa-floppy-disk"></i> Simpan</button></div>
+  </div>
+  <div class="g2">
+    <div class="glass c">
+      <div class="ct"><i class="fa-solid fa-temperature-three-quarters"></i> Suhu &amp; Tekanan Reaktor</div>
+      <div class="sr"><div class="sr-i"><div class="sr-n">Suhu Maksimum (Kritis)</div><div class="sr-d">Batas atas aman &middot; Default 680&deg;C</div></div><div class="sr-inp"><input class="si" type="number" id="set-tmax" value="680"><span class="su">&deg;C</span></div></div>
+      <div class="sr"><div class="sr-i"><div class="sr-n">Suhu Warning</div><div class="sr-d">Mulai peringatan &middot; Default 600&deg;C</div></div><div class="sr-inp"><input class="si" type="number" id="set-twarn" value="600"><span class="su">&deg;C</span></div></div>
+      <div class="sr"><div class="sr-i"><div class="sr-n">Tekanan Maksimum (Kritis)</div><div class="sr-d">Batas atas aman &middot; Default 2.2 atm</div></div><div class="sr-inp"><input class="si" type="number" step="0.1" id="set-pmax" value="2.2"><span class="su">atm</span></div></div>
+      <div class="sr"><div class="sr-i"><div class="sr-n">Tekanan Warning</div><div class="sr-d">Mulai peringatan &middot; Default 1.8 atm</div></div><div class="sr-inp"><input class="si" type="number" step="0.1" id="set-pwarn" value="1.8"><span class="su">atm</span></div></div>
+    </div>
+    <div class="glass c">
+      <div class="ct"><i class="fa-solid fa-wind"></i> Aliran Gas &amp; Sistem</div>
+      <div class="sr"><div class="sr-i"><div class="sr-n">Aliran Gas Minimum</div><div class="sr-d">Batas bawah normal &middot; Default 5 m&sup3;/jam</div></div><div class="sr-inp"><input class="si" type="number" id="set-fmin" value="5"><span class="su">m&sup3;/jam</span></div></div>
+      <div class="sr"><div class="sr-i"><div class="sr-n">Aliran Gas Maksimum</div><div class="sr-d">Batas atas normal &middot; Default 12 m&sup3;/jam</div></div><div class="sr-inp"><input class="si" type="number" id="set-fmax" value="12"><span class="su">m&sup3;/jam</span></div></div>
+      <div class="sr"><div class="sr-i"><div class="sr-n">Interval Update</div><div class="sr-d">Polling data sensor real-time</div></div><div class="sr-inp"><input class="si" type="number" value="5" disabled><span class="su">detik</span></div></div>
+      <div class="sr"><div class="sr-i"><div class="sr-n">Versi Sistem</div><div class="sr-d">PYRO-AI Monitoring Dashboard</div></div><div class="sr-inp"><span class="su">v1.0.0</span></div></div>
+    </div>
+  </div>
+</div>
+
 </main>
 <div id="toast"><i class="fa-solid fa-circle-check"></i> <span id="tmsg"></span></div>
 
@@ -330,9 +394,23 @@ function go(id,el){
   document.querySelectorAll('.nav').forEach(n=>n.classList.remove('on'));
   document.getElementById('pg-'+id).classList.add('on');
   el.classList.add('on');
-  document.getElementById('ptitle').textContent=titles[id];
+  const psub=document.getElementById('psub');if(psub)psub.textContent=titles[id]+' · Update real-time';
+  document.querySelectorAll('.tabbtn').forEach(t=>t.classList.remove('on'));
   closeSB();
 }
+const tabMap={dash:'dash',trend:'trend',cfg:'cfg'};
+function goTab(id,el){
+  document.querySelectorAll('.tabbtn').forEach(t=>t.classList.remove('on'));
+  el.classList.add('on');
+  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
+  document.getElementById('pg-'+id).classList.add('on');
+  const psub=document.getElementById('psub');if(psub)psub.textContent=titles[id]+' · Update real-time';
+}
+function markAllRead(){
+  document.getElementById('nb').textContent='(0)';
+  toast('Semua notifikasi ditandai sudah dibaca.');
+}
+function exportPDF(){toast('Laporan PDF sedang disiapkan... (memerlukan backend server)');}
 function toggleSB(){document.getElementById('sb').classList.toggle('open');document.getElementById('overlay').classList.toggle('show');}
 function closeSB(){document.getElementById('sb').classList.remove('open');document.getElementById('overlay').classList.remove('show');}
 
@@ -366,7 +444,7 @@ function renderNotifs(){
   document.getElementById('notif-mini').innerHTML=notifs.slice(0,5).length?notifs.slice(0,5).map(mkRow).join(''):'<div style="text-align:center;color:var(--txm);padding:14px;font-size:11px">Belum ada notifikasi.</div>';
   document.getElementById('notif-cnt').textContent=notifs.length;
   const crit=notifs.filter(n=>n.lvl==='crit'||n.lvl==='warn').length;
-  document.getElementById('nb').textContent=crit;
+  document.getElementById('nb').textContent='('+crit+')';
 }
 addNotif('Suhu reaktor naik mendekati batas maksimal (680&deg;C)','warn');
 addNotif('Tekanan stabil dalam rentang aman','info');
@@ -374,28 +452,55 @@ addNotif('Sensor aliran gas terdeteksi anomali ringan','warn');
 
 // CHARTS
 function mkTmpChart(id){
-  return new Chart(document.getElementById(id).getContext('2d'),{type:'line',data:{labels:Array.from({length:24},(_,i)=>i+'0s'),datasets:[{label:'Suhu °C',data:Array.from({length:24},()=>+(450+(Math.random()-.5)*20).toFixed(1)),borderColor:'#ff8a3d',backgroundColor:'rgba(255,138,61,.08)',fill:true,tension:.4,borderWidth:2,pointRadius:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,.04)'},ticks:{font:{size:9}}},y:{grid:{color:'rgba(255,255,255,.04)'},min:400,max:700,ticks:{font:{size:9},callback:v=>v+'°'}}}}});
+  return new Chart(document.getElementById(id).getContext('2d'),{type:'line',data:{labels:Array.from({length:24},(_,i)=>i+'0s'),datasets:[
+    {label:'Suhu °C',data:Array.from({length:24},()=>+(450+(Math.random()-.5)*20).toFixed(1)),borderColor:'#ff8a3d',backgroundColor:'rgba(255,138,61,.08)',fill:true,tension:.4,borderWidth:2,pointRadius:0},
+    {label:'Batas Kritis 680°C',data:Array(24).fill(680),borderColor:'rgba(255,77,94,.6)',borderDash:[6,4],borderWidth:1.5,pointRadius:0,fill:false},
+    {label:'Target 450°C',data:Array(24).fill(450),borderColor:'rgba(57,255,158,.5)',borderDash:[6,4],borderWidth:1.5,pointRadius:0,fill:false}
+  ]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{position:'top',labels:{font:{size:9},color:'#8b93a7',boxWidth:10}},tooltip:{callbacks:{label:c=>c.dataset.label+': '+c.parsed.y+'°C'}}},scales:{x:{grid:{color:'rgba(255,255,255,.04)'},ticks:{font:{size:9}}},y:{grid:{color:'rgba(255,255,255,.04)'},min:380,max:720,ticks:{font:{size:9},callback:v=>v+'°'}}}}});
 }
 function mkPrsChart(id){
-  return new Chart(document.getElementById(id).getContext('2d'),{type:'line',data:{labels:Array.from({length:24},(_,i)=>i+'0s'),datasets:[{label:'Tekanan atm',data:Array.from({length:24},()=>+(1.2+(Math.random()-.5)*.4).toFixed(2)),borderColor:'#3da5ff',backgroundColor:'rgba(61,165,255,.08)',fill:true,tension:.4,borderWidth:2,pointRadius:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,.04)'},ticks:{font:{size:9}}},y:{grid:{color:'rgba(255,255,255,.04)'},min:.5,max:2.5,ticks:{font:{size:9}}}}}});
+  return new Chart(document.getElementById(id).getContext('2d'),{type:'line',data:{labels:Array.from({length:24},(_,i)=>i+'0s'),datasets:[{label:'Tekanan atm',data:Array.from({length:24},()=>+(1.2+(Math.random()-.5)*.4).toFixed(2)),borderColor:'#3da5ff',backgroundColor:'rgba(61,165,255,.08)',fill:true,tension:.4,borderWidth:2,pointRadius:0}]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>'Tekanan: '+c.parsed.y+' atm'}}},scales:{x:{grid:{color:'rgba(255,255,255,.04)'},ticks:{font:{size:9}}},y:{grid:{color:'rgba(255,255,255,.04)'},min:.5,max:2.5,ticks:{font:{size:9}}}}}});
 }
 const cTmp=mkTmpChart('ch-tmp'),cTmp2=mkTmpChart('ch-tmp2');
 const cPrs=mkPrsChart('ch-prs'),cPrs2=mkPrsChart('ch-prs2');
 
+// Toggle series buttons for suhu chart
+(function(){
+  const box=document.getElementById('tog-tmp');if(!box)return;
+  const labels=['Suhu °C','Batas Kritis','Target'];
+  labels.forEach((lb,i)=>{
+    const b=document.createElement('div');
+    b.className='tabbtn on';b.style.cssText='padding:4px 10px;font-size:9.5px';b.textContent=lb;
+    b.onclick=()=>{const meta=cTmp.getDatasetMeta(i);meta.hidden=!meta.hidden;cTmp.update();b.classList.toggle('on',!meta.hidden);};
+    box.appendChild(b);
+  });
+})();
+
 function mkDailyChart(id){
   return new Chart(document.getElementById(id).getContext('2d'),{type:'bar',data:{labels:['Sen','Sel','Rab','Kam','Jum','Sab','Min'],datasets:[
-    {label:'Bio-oil (L)',data:[38,40,37,42,41,39,42.3],backgroundColor:'rgba(255,255,255,.55)',borderRadius:4},
-    {label:'Syngas (m³)',data:[14,15,13,16,15,14,18.2],backgroundColor:'rgba(57,255,158,.65)',borderRadius:4},
-    {label:'Biochar (kg)',data:[13,14,12,14,13,13,15.8],backgroundColor:'rgba(255,138,61,.65)',borderRadius:4}
-  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{font:{size:10},color:'#8b93a7'}}},scales:{x:{grid:{display:false},ticks:{font:{size:9}}},y:{grid:{color:'rgba(255,255,255,.05)'},ticks:{font:{size:9}}}}}});
+    {label:'Bio-oil (L)',data:[38,40,37,42,41,39,42.3],backgroundColor:'rgba(255,255,255,.55)',borderRadius:3,stack:'s'},
+    {label:'Syngas (m³)',data:[14,15,13,16,15,14,18.2],backgroundColor:'rgba(57,255,158,.65)',borderRadius:3,stack:'s'},
+    {label:'Biochar (kg)',data:[13,14,12,14,13,13,15.8],backgroundColor:'rgba(255,138,61,.65)',borderRadius:3,stack:'s'}
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{font:{size:10},color:'#8b93a7'}},tooltip:{mode:'index',intersect:false}},scales:{x:{grid:{display:false},stacked:true,ticks:{font:{size:9}}},y:{grid:{color:'rgba(255,255,255,.05)'},stacked:true,ticks:{font:{size:9}}}}}});
 }
 const cDaily=mkDailyChart('ch-daily'),cDaily2=mkDailyChart('ch-daily2');
 
+const predBase=Array.from({length:24},(_,i)=>+(20+i*1.05+Math.random()*1.5).toFixed(1));
 const cPred=new Chart(document.getElementById('ch-pred').getContext('2d'),{type:'line',data:{labels:Array.from({length:24},(_,i)=>i+'h'),datasets:[
-  {label:'Bio-oil (kg)',data:Array.from({length:24},(_,i)=>+(20+i*1.05+Math.random()*1.5).toFixed(1)),borderColor:'#39ff9e',backgroundColor:'rgba(57,255,158,.06)',fill:true,tension:.4,borderWidth:2,pointRadius:0},
+  {label:'Batas Atas',data:predBase.map(v=>+(v*1.08).toFixed(1)),borderColor:'transparent',backgroundColor:'rgba(57,255,158,.08)',fill:'+1',tension:.4,pointRadius:0},
+  {label:'Batas Bawah',data:predBase.map(v=>+(v*0.92).toFixed(1)),borderColor:'transparent',backgroundColor:'rgba(57,255,158,.08)',fill:false,tension:.4,pointRadius:0},
+  {label:'Prediksi Bio-oil (kg)',data:predBase,borderColor:'#39ff9e',backgroundColor:'transparent',tension:.4,borderWidth:2,pointRadius:0},
   {label:'Syngas (m³)',data:Array.from({length:24},(_,i)=>+(9+i*.42-Math.random()*1).toFixed(1)),borderColor:'#ffcf3d',backgroundColor:'transparent',tension:.4,borderWidth:2,pointRadius:0},
   {label:'Biochar (kg)',data:Array.from({length:24},(_,i)=>+(8+i*.36+Math.random()*.5).toFixed(1)),borderColor:'#3da5ff',backgroundColor:'transparent',tension:.4,borderWidth:2,pointRadius:0}
-]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{font:{size:10},color:'#8b93a7'}}},scales:{x:{grid:{color:'rgba(255,255,255,.04)'},ticks:{font:{size:9}}},y:{grid:{color:'rgba(255,255,255,.04)'},ticks:{font:{size:9}}}}}});
+]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{position:'top',labels:{font:{size:9},color:'#8b93a7',boxWidth:10,filter:i=>i.text!=='Batas Atas'&&i.text!=='Batas Bawah'}}},scales:{x:{grid:{color:'rgba(255,255,255,.04)'},ticks:{font:{size:9}}},y:{grid:{color:'rgba(255,255,255,.04)'},ticks:{font:{size:9}}}}}});
+
+// GAUGE METERS (half-donut)
+function mkGauge(id,val,max,color){
+  return new Chart(document.getElementById(id).getContext('2d'),{type:'doughnut',data:{datasets:[{data:[val,max-val],backgroundColor:[color,'rgba(255,255,255,.06)'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,circumference:180,rotation:270,cutout:'75%',plugins:{legend:{display:false},tooltip:{enabled:false}}}});
+}
+const gTmp=mkGauge('gg-tmp',454,700,'#ff7a29');
+const gPrs=mkGauge('gg-prs',1.2,2,'#3da5ff');
+const gFlw=mkGauge('gg-flw',8.7,15,'#3dffa0');
 
 function sel(id,v){const el=document.getElementById(id);if(el)el.innerHTML=v;}
 function cls(id,c){const el=document.getElementById(id);if(el)el.className=c;}
@@ -414,6 +519,22 @@ function refreshData(){
   updateAll(true);
   toast('Data berhasil dimuat ulang.');
 }
+
+function saveCfg(){toast('Threshold berhasil disimpan.');}
+
+let lastHourSnap={tmp:450,prs:1.2,flw:8.5,oil:42.3},hourTick=0;
+function updateTrend(){
+  hourTick++;
+  const dT=(S.tmp-lastHourSnap.tmp).toFixed(0),dP=(S.prs-lastHourSnap.prs).toFixed(1),dF=(S.flw-lastHourSnap.flw).toFixed(1);
+  const arrow=v=>v>0?'↑':v<0?'↓':'→';
+  sel('t-tmp',arrow(dT)+' '+Math.abs(dT)+'°C dari 1 jam lalu');
+  sel('t-prs',arrow(dP)+' '+Math.abs(dP)+' atm dari 1 jam lalu');
+  sel('t-flw',arrow(dF)+' '+Math.abs(dF)+' m³/jam dari 1 jam lalu');
+  sel('t-oil','+'+(Math.random()*0.8).toFixed(1)+' L/jam');
+  lastHourSnap={tmp:S.tmp,prs:S.prs,flw:S.flw,oil:S.oil};
+}
+setInterval(updateTrend,60000);
+setTimeout(updateTrend,8000);
 
 function updateAll(force){
   S.tmp=Math.max(380,Math.min(720,S.tmp+(Math.random()-.48)*14));
@@ -437,6 +558,11 @@ function updateAll(force){
 
   [cTmp,cTmp2].forEach(c=>{c.data.datasets[0].data.push(+S.tmp.toFixed(1));c.data.datasets[0].data.shift();c.update('none');});
   [cPrs,cPrs2].forEach(c=>{c.data.datasets[0].data.push(+S.prs.toFixed(2));c.data.datasets[0].data.shift();c.update('none');});
+
+  gTmp.data.datasets[0].data=[S.tmp,700-S.tmp];gTmp.update('none');
+  gPrs.data.datasets[0].data=[S.prs,2-S.prs];gPrs.update('none');
+  gFlw.data.datasets[0].data=[S.flw,15-S.flw];gFlw.update('none');
+  sel('gg-tmp-v',S.tmp.toFixed(0)+'°C');sel('gg-prs-v',S.prs.toFixed(1)+' atm');sel('gg-flw-v',S.flw.toFixed(1)+' m&sup3;/jam');
 
   if(tCrit&&(force||Math.random()<.5))addNotif('Suhu reaktor kritis: '+S.tmp.toFixed(0)+'&deg;C — melebihi batas maksimal ('+TMAX+'&deg;C)','crit');
   else if(tWarn&&(force||Math.random()<.3))addNotif('Suhu reaktor naik mendekati batas maksimal ('+TMAX+'&deg;C), saat ini '+S.tmp.toFixed(0)+'&deg;C','warn');
