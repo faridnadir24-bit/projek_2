@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>PYRO-AI · Monitoring Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg1:#050709;--bg2:#0b0f14;--bg3:#0e1512;
+  --glass:rgba(20,26,24,.55);--glassb:rgba(57,255,158,.14);
+  --neon:#3dffa0;--neon-d:#0fce76;--neon-dim:rgba(61,255,160,.14);
+  --orange:#ff7a29;--orange-d:#e8661a;--orange-dim:rgba(255,122,41,.14);
+  --blue:#3da5ff;--blue-dim:rgba(61,165,255,.14);
+  --red:#ff4d5e;--red-dim:rgba(255,77,94,.14);
+  --yellow:#ffcf3d;--yellow-dim:rgba(255,207,61,.14);
+  --tx:#eef1f8;--txm:#8b93a7;--txs:#5b6377;
+  --sans:'Inter',sans-serif;--disp:'Poppins',sans-serif;--mono:'IBM Plex Mono',monospace;
+  --fw:250px;--fh:60px;
+}
+html,body{height:100%;font-family:var(--sans);overflow:hidden}
+body{
+  display:grid;grid-template-columns:var(--fw) 1fr;grid-template-rows:var(--fh) 1fr;
+  background:
+    radial-gradient(circle at 12% 6%, rgba(61,255,160,.14), transparent 40%),
+    radial-gradient(circle at 90% 14%, rgba(255,122,41,.10), transparent 42%),
+    radial-gradient(circle at 80% 95%, rgba(61,255,160,.07), transparent 40%),
+    repeating-linear-gradient(0deg, rgba(61,255,160,.025) 0px, rgba(61,255,160,.025) 1px, transparent 1px, transparent 42px),
+    repeating-linear-gradient(90deg, rgba(61,255,160,.025) 0px, rgba(61,255,160,.025) 1px, transparent 1px, transparent 42px),
+    linear-gradient(160deg,var(--bg1),var(--bg2) 55%,var(--bg3));
+  color:var(--tx);
+}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-thumb{background:rgba(61,255,160,.2);border-radius:3px}
+
+/* GLASS BASE */
+.glass{background:var(--glass);border:1px solid var(--glassb);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-radius:14px;box-shadow:0 4px 24px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.04)}
+
+/* SIDEBAR */
+#sb{grid-row:1/3;grid-column:1;background:rgba(5,7,9,.88);backdrop-filter:blur(18px);border-right:1px solid rgba(61,255,160,.16);box-shadow:2px 0 24px rgba(0,0,0,.5);display:flex;flex-direction:column;overflow-y:auto;z-index:200;transition:transform .25s}
+.sb-brand{padding:20px 18px 14px}
+.sb-logo{display:flex;align-items:center;gap:11px;margin-bottom:14px}
+.sb-icon{width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,var(--neon),var(--orange));display:flex;align-items:center;justify-content:center;font-size:16px;color:#0a0e1a;flex-shrink:0;box-shadow:0 0 18px rgba(57,255,158,.35)}
+.sb-name{font-family:var(--disp);font-size:16px;font-weight:800;letter-spacing:-.3px;color:#fff;line-height:1.1}
+.sb-tag{font-size:8px;color:var(--neon);font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-top:2px}
+.sb-conn{display:flex;align-items:center;gap:7px;padding:8px 11px;border-radius:9px;font-size:10.5px;font-weight:600}
+.sb-conn.on{background:var(--neon-dim);color:var(--neon);border:1px solid rgba(57,255,158,.25)}
+.dot-pulse{width:7px;height:7px;border-radius:50%;background:var(--neon);animation:pu 1.6s infinite;flex-shrink:0}
+@keyframes pu{0%,100%{box-shadow:0 0 0 0 rgba(57,255,158,.5)}50%{box-shadow:0 0 0 5px rgba(57,255,158,0)}}
+.sb-sec{padding:16px 18px 6px;font-size:8.5px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--txs)}
+.nav{display:flex;align-items:center;gap:10px;padding:9px 12px;margin:2px 10px;border-radius:9px;cursor:pointer;color:var(--txm);font-size:12.5px;font-weight:500;transition:all .15s;user-select:none}
+.nav:hover{background:rgba(255,255,255,.05);color:#fff}
+.nav.on{background:linear-gradient(90deg,var(--neon-dim),transparent);color:var(--neon);font-weight:700;border-left:2px solid var(--neon)}
+.nav i{width:15px;text-align:center;font-size:12.5px}
+.nb{margin-left:auto;background:var(--red);color:#fff;font-size:8px;font-weight:700;padding:1px 6px;border-radius:20px;min-width:16px;text-align:center}
+.sb-foot{margin-top:auto;padding:14px 18px;border-top:1px solid var(--glassb)}
+.sb-foot p{font-size:8.5px;color:var(--txs);line-height:1.7}
+.mode-toggle{display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.03);border:1px solid var(--glassb);border-radius:9px;padding:7px 11px;margin-top:10px;font-size:10.5px;color:var(--txm);cursor:pointer}
+.mtrack{width:34px;height:17px;border-radius:20px;background:rgba(255,255,255,.1);position:relative;transition:background .2s}
+.mtrack.dark{background:var(--neon-dim)}
+.mknob{position:absolute;top:2px;left:2px;width:13px;height:13px;border-radius:50%;background:var(--txm);transition:all .2s}
+.mtrack.dark .mknob{left:19px;background:var(--neon)}
+
+/* TOPBAR */
+#tb{grid-row:1;grid-column:2;display:flex;align-items:center;padding:0 20px;gap:12px;border-bottom:1px solid rgba(61,255,160,.15);background:rgba(5,7,9,.7);backdrop-filter:blur(14px);min-width:0;box-shadow:0 2px 20px rgba(0,0,0,.35)}
+.tb-title h2{font-family:var(--disp);font-size:14px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tb-title p{font-size:9.5px;color:var(--txm);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tb-title{flex:1;min-width:0}
+.clk{font-family:var(--mono);font-size:13px;color:var(--neon);font-weight:600;flex-shrink:0;text-shadow:0 0 10px rgba(57,255,158,.4)}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:8px 15px;border-radius:9px;font-size:11.5px;font-weight:700;cursor:pointer;border:none;font-family:var(--sans);transition:all .15s;white-space:nowrap}
+.btn-neon{background:linear-gradient(135deg,var(--neon),var(--neon-d));color:#04150c;box-shadow:0 0 14px rgba(57,255,158,.3)}
+.btn-neon:hover{filter:brightness(1.12);box-shadow:0 0 20px rgba(57,255,158,.5)}
+.btn-ghost{background:transparent;border:1.5px solid var(--glassb);color:var(--txm)}
+.btn-ghost:hover{border-color:var(--neon);color:var(--neon)}
+#ham{display:none;width:34px;height:34px;align-items:center;justify-content:center;cursor:pointer;border:none;background:transparent;color:#fff;font-size:17px;flex-shrink:0}
+.sb-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:190}
+
+/* MAIN */
+#main{grid-row:2;grid-column:2;overflow-y:auto;padding:16px 18px 32px}
+.pg{display:none}.pg.on{display:block;animation:fadein .3s ease}
+@keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.ph{margin-bottom:16px;display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.ph-l h1{font-family:var(--disp);font-size:17px;font-weight:800;color:#fff;display:flex;align-items:center;gap:8px}
+.ph-l h1 i{color:var(--neon);font-size:15px}
+.ph-l p{font-size:10.5px;color:var(--txm);margin-top:4px}
+
+/* GRID */
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:14px}
+.mb{margin-bottom:14px}
+
+/* METRIC CARDS */
+.mcard{padding:16px;transition:transform .2s,box-shadow .2s;position:relative;overflow:hidden}
+.mcard:hover{transform:translateY(-4px) scale(1.01)}
+.mcard::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.mc-tmp{border-color:rgba(255,122,41,.22)}.mc-tmp::before{background:linear-gradient(90deg,var(--orange),transparent);box-shadow:0 0 10px var(--orange)}
+.mc-tmp:hover{box-shadow:0 10px 34px rgba(255,122,41,.28)}
+.mc-prs{border-color:rgba(61,165,255,.22)}.mc-prs::before{background:linear-gradient(90deg,var(--blue),transparent);box-shadow:0 0 10px var(--blue)}
+.mc-prs:hover{box-shadow:0 10px 34px rgba(61,165,255,.28)}
+.mc-flw{border-color:rgba(61,255,160,.25)}.mc-flw::before{background:linear-gradient(90deg,var(--neon),transparent);box-shadow:0 0 10px var(--neon)}
+.mc-flw:hover{box-shadow:0 10px 34px rgba(61,255,160,.3)}
+.mc-oil{border-color:rgba(255,255,255,.14)}.mc-oil::before{background:linear-gradient(90deg,#c7cad3,transparent)}
+.mc-oil:hover{box-shadow:0 10px 34px rgba(255,255,255,.1)}
+.mic{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:15px;margin-bottom:10px}
+.mi-o{background:var(--orange-dim);color:var(--orange)}
+.mi-b{background:var(--blue-dim);color:var(--blue)}
+.mi-g{background:var(--neon-dim);color:var(--neon)}
+.mi-w{background:rgba(255,255,255,.08);color:#dfe3ec}
+.mlb{font-size:9.5px;font-weight:600;color:var(--txm);text-transform:uppercase;letter-spacing:.6px;margin-bottom:3px}
+.mv{font-family:var(--mono);font-size:26px;font-weight:700;color:#fff;line-height:1.1;text-shadow:0 0 18px rgba(61,255,160,.25)}
+.mv span{font-size:11px;font-weight:400;color:var(--txm)}
+.mst{font-size:9.5px;font-weight:600;display:flex;align-items:center;gap:4px;margin-top:6px}
+.ok{color:var(--neon)}.warn{color:var(--yellow)}.bad{color:var(--red)}.neu{color:var(--txm)}
+
+/* CARD GENERIC */
+.c{padding:15px}
+.ct{font-size:12px;font-weight:700;color:#fff;margin-bottom:12px;display:flex;align-items:center;gap:7px;font-family:var(--disp)}
+.ct i{color:var(--neon);font-size:12px}
+.ct-r{margin-left:auto;font-size:9.5px;font-weight:500;color:var(--txm)}
+.cw{position:relative}.xl{height:250px}.lg{height:215px}.md{height:180px}.sm{height:150px}
+
+/* AI PREDICTION */
+.pred-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.pred-card{padding:15px;border-radius:12px;position:relative}
+.pred-card.g{background:var(--neon-dim);border:1px solid rgba(57,255,158,.25)}
+.pred-card.y{background:var(--yellow-dim);border:1px solid rgba(255,207,61,.25)}
+.pred-card.n{background:rgba(255,255,255,.04);border:1px solid var(--glassb)}
+.pred-lb{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--txm);margin-bottom:7px}
+.pred-v{font-family:var(--mono);font-size:22px;font-weight:700;color:#fff;margin-bottom:5px}
+.pred-delta{font-size:10.5px;font-weight:600;display:flex;align-items:center;gap:5px}
+.pred-status{display:inline-block;margin-top:9px;padding:3px 9px;border-radius:20px;font-size:9px;font-weight:700;letter-spacing:.4px}
+.ps-g{background:rgba(57,255,158,.18);color:var(--neon)}
+.ps-y{background:rgba(255,207,61,.18);color:var(--yellow)}
+.ps-r{background:rgba(255,77,94,.18);color:var(--red)}
+
+/* NOTIFICATIONS */
+.notif{display:flex;gap:10px;padding:10px 11px;border-radius:10px;margin-bottom:8px;align-items:flex-start;border-left:3px solid}
+.notif:last-child{margin-bottom:0}
+.notif.crit{background:var(--red-dim);border-color:var(--red)}
+.notif.warn{background:var(--yellow-dim);border-color:var(--yellow)}
+.notif.info{background:var(--neon-dim);border-color:var(--neon)}
+.notif-ico{font-size:13px;margin-top:1px;flex-shrink:0}
+.notif-txt{flex:1;font-size:11px;color:#e7eaf2;line-height:1.4}
+.notif-ts{font-size:8.5px;color:var(--txs);font-family:var(--mono);margin-top:3px}
+.notif-list{max-height:290px;overflow-y:auto}
+
+/* SENSOR STATUS */
+.sg-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.sensor-box{padding:15px;text-align:center;border-radius:12px;transition:all .2s}
+.sensor-box.up{border:1px solid rgba(57,255,158,.2)}
+.sensor-box.down{border:1px solid rgba(255,77,94,.3);background:var(--red-dim)}
+.sensor-ico{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:17px;margin:0 auto 9px}
+.sensor-nm{font-size:11px;font-weight:700;color:#fff;margin-bottom:3px}
+.sensor-vl{font-family:var(--mono);font-size:17px;font-weight:700}
+.sensor-st{font-size:9.5px;font-weight:600;margin-top:6px;display:flex;align-items:center;justify-content:center;gap:4px}
+
+/* TABLE */
+.tbl{width:100%;border-collapse:collapse;font-size:11.5px}
+.tbl thead th{background:rgba(255,255,255,.03);padding:9px 11px;text-align:left;font-size:9px;font-weight:700;color:var(--txm);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--glassb);white-space:nowrap}
+.tbl tbody td{padding:9px 11px;border-bottom:1px solid rgba(255,255,255,.04);color:#e7eaf2}
+.tbl tbody tr:hover td{background:rgba(255,255,255,.025)}
+.badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:9px;font-weight:700}
+.bg-g{background:rgba(57,255,158,.15);color:var(--neon)}.bg-o{background:rgba(255,138,61,.15);color:var(--orange)}.bg-b{background:rgba(61,165,255,.15);color:var(--blue)}
+.tscroll{overflow-x:auto}
+
+/* TOAST */
+#toast{position:fixed;bottom:18px;right:18px;background:rgba(20,26,43,.95);backdrop-filter:blur(10px);color:#fff;padding:11px 16px;border-radius:10px;font-size:11.5px;font-weight:600;display:flex;align-items:center;gap:8px;box-shadow:0 8px 30px rgba(0,0,0,.4);opacity:0;transform:translateY(14px);transition:all .3s;z-index:999;pointer-events:none;max-width:320px;border:1px solid var(--glassb)}
+#toast.show{opacity:1;transform:translateY(0)}
+#toast i{color:var(--neon)}
+
+/* LIGHT MODE OVERRIDE */
+body.light{
+  background:linear-gradient(160deg,#f4f6fb,#eef1f8 55%,#e9edf7);color:#1b2233;
+}
+body.light .glass{background:rgba(255,255,255,.65);border-color:rgba(20,30,60,.08)}
+body.light #sb{background:rgba(255,255,255,.85);border-color:rgba(20,30,60,.08)}
+body.light .sb-name,body.light .tb-title h2,body.light .ct,body.light .pred-v,body.light .mv,body.light .sensor-nm{color:#141a2b}
+body.light #tb{background:rgba(255,255,255,.7);border-color:rgba(20,30,60,.08)}
+body.light .tbl tbody td{color:#1b2233}
+body.light .nav{color:#5b6377}
+body.light .sb-foot p{color:#8b93a7}
+
+@media(max-width:900px){
+  .pred-grid{grid-template-columns:1fr}
+  .sg-grid{grid-template-columns:1fr}
+}
+@media(max-width:767px){
+  :root{--fw:0px;--fh:54px}
+  body{grid-template-columns:1fr;grid-template-rows:var(--fh) 1fr}
+  #sb{position:fixed;top:0;left:0;bottom:0;width:250px;transform:translateX(-100%);z-index:200;grid-column:auto;grid-row:auto}
+  #sb.open{transform:translateX(0)}
+  .sb-overlay.show{display:block}
+  #ham{display:flex}
+  #tb{grid-column:1;padding:0 12px}
+  #main{grid-column:1;grid-row:2;padding:12px 12px 28px}
+  .g4{grid-template-columns:repeat(2,1fr)}
+  .g2,.g3{grid-template-columns:1fr}
+  .xl{height:210px}.lg{height:190px}.md{height:165px}.sm{height:140px}
+  .btn span.lbl{display:none}
+}
+</style>
+</head>
+<body>
+<aside id="sb">
+  <div class="sb-brand">
+    <div class="sb-logo">
+      <div class="sb-icon"><i class="fa-solid fa-fire-flame-curved"></i></div>
+      <div><div class="sb-name">PYRO-AI</div><div class="sb-tag">Monitoring Dashboard</div></div>
+    </div>
+    <div class="sb-conn on" id="connBox"><div class="dot-pulse" id="connDot"></div><span id="connTxt">Real-time</span></div>
+    <div class="mode-toggle" onclick="toggleMode()"><span>Dark / Light</span><div class="mtrack dark" id="mtrack"><div class="mknob"></div></div></div>
+  </div>
+  <div class="sb-sec">Monitoring Utama</div>
+  <div class="nav on" onclick="go('dash',this)"><i class="fa-solid fa-gauge-high"></i> Dashboard Utama</div>
+  <div class="nav" onclick="go('trend',this)"><i class="fa-solid fa-chart-line"></i> Grafik Trend</div>
+  <div class="nav" onclick="go('ai',this)"><i class="fa-solid fa-brain"></i> Prediksi AI</div>
+  <div class="sb-sec">Peringatan &amp; Sensor</div>
+  <div class="nav" onclick="go('notif',this)"><i class="fa-solid fa-bell"></i> Notifikasi &amp; Alert <span class="nb" id="nb">0</span></div>
+  <div class="nav" onclick="go('sensor',this)"><i class="fa-solid fa-microchip"></i> Status Sensor</div>
+  <div class="sb-sec">Riwayat</div>
+  <div class="nav" onclick="go('riwayat',this)"><i class="fa-solid fa-table-list"></i> Riwayat Produksi</div>
+  <div class="sb-foot"><p>PYRO-AI v1.0 &middot; Pirolisis kotoran ayam<br>menjadi bio-oil, syngas &amp; biochar<br>&mdash; Farid</p></div>
+</aside>
+<div class="sb-overlay" id="overlay" onclick="closeSB()"></div>
+
+<header id="tb" class="glass" style="border-radius:0">
+  <button id="ham" onclick="toggleSB()"><i class="fa-solid fa-bars"></i></button>
+  <div class="tb-title"><h2 id="ptitle">Dashboard Utama</h2><p>Pemantauan real-time proses pirolisis &middot; Update tiap 5 detik</p></div>
+  <button class="btn btn-neon" onclick="refreshData()"><i class="fa-solid fa-rotate-right"></i> <span class="lbl">REFRESH DATA</span></button>
+  <div class="clk" id="clk">--:--:--</div>
+</header>
+
+<main id="main">
+
+<!-- DASHBOARD -->
+<div id="pg-dash" class="pg on">
+  <div class="ph"><div class="ph-l"><h1><i class="fa-solid fa-gauge-high"></i> Dashboard Utama</h1><p>Ringkasan metrik reaktor pirolisis secara real-time</p></div></div>
+  <div class="g4">
+    <div class="glass mcard mc-tmp"><div class="mic mi-o"><i class="fa-solid fa-temperature-three-quarters"></i></div><div class="mlb">Suhu Reaktor</div><div class="mv"><span id="v-tmp">450</span><span> &deg;C</span></div><div class="mst ok" id="s-tmp"><i class="fa-solid fa-check"></i> Stabil</div></div>
+    <div class="glass mcard mc-prs"><div class="mic mi-b"><i class="fa-solid fa-gauge"></i></div><div class="mlb">Tekanan Reaktor</div><div class="mv"><span id="v-prs">1.2</span><span> atm</span></div><div class="mst ok" id="s-prs"><i class="fa-solid fa-check"></i> Aman</div></div>
+    <div class="glass mcard mc-flw"><div class="mic mi-g"><i class="fa-solid fa-wind"></i></div><div class="mlb">Aliran Gas</div><div class="mv"><span id="v-flw">8.5</span><span> m&sup3;/jam</span></div><div class="mst ok" id="s-flw"><i class="fa-solid fa-check"></i> Normal</div></div>
+    <div class="glass mcard mc-oil"><div class="mic mi-w"><i class="fa-solid fa-oil-can"></i></div><div class="mlb">Produksi Bio-oil</div><div class="mv"><span id="v-oil">42.3</span><span> L</span></div><div class="mst neu"><i class="fa-solid fa-arrow-up"></i> Akumulasi hari ini</div></div>
+  </div>
+  <div class="g2">
+    <div class="glass c"><div class="ct"><i class="fa-solid fa-chart-line"></i> Suhu vs Waktu <span class="ct-r">Live · 5 detik</span></div><div class="cw lg"><canvas id="ch-tmp"></canvas></div></div>
+    <div class="glass c"><div class="ct"><i class="fa-solid fa-chart-line"></i> Tekanan vs Waktu <span class="ct-r">Live · 5 detik</span></div><div class="cw lg"><canvas id="ch-prs"></canvas></div></div>
+  </div>
+  <div class="g2">
+    <div class="glass c"><div class="ct"><i class="fa-solid fa-chart-column"></i> Produksi Harian</div><div class="cw md"><canvas id="ch-daily"></canvas></div></div>
+    <div class="glass c">
+      <div class="ct"><i class="fa-solid fa-bell"></i> Notifikasi Terbaru <span class="ct-r" id="notif-cnt">0</span></div>
+      <div class="notif-list" id="notif-mini" style="max-height:180px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- TREND -->
+<div id="pg-trend" class="pg">
+  <div class="ph"><div class="ph-l"><h1><i class="fa-solid fa-chart-line"></i> Grafik Trend Real-Time</h1><p>Suhu, tekanan, dan produksi harian reaktor pirolisis</p></div></div>
+  <div class="glass c mb"><div class="ct"><i class="fa-solid fa-temperature-three-quarters"></i> Suhu Reaktor vs Waktu</div><div class="cw xl"><canvas id="ch-tmp2"></canvas></div></div>
+  <div class="glass c mb"><div class="ct"><i class="fa-solid fa-gauge"></i> Tekanan Reaktor vs Waktu</div><div class="cw xl"><canvas id="ch-prs2"></canvas></div></div>
+  <div class="glass c"><div class="ct"><i class="fa-solid fa-chart-column"></i> Produksi Harian &mdash; Bio-oil, Syngas, Biochar</div><div class="cw lg"><canvas id="ch-daily2"></canvas></div></div>
+</div>
+
+<!-- AI PREDIKSI -->
+<div id="pg-ai" class="pg">
+  <div class="ph"><div class="ph-l"><h1><i class="fa-solid fa-brain"></i> Prediksi AI</h1><p>Estimasi yield berdasarkan data sensor terkini</p></div></div>
+  <div class="pred-grid mb">
+    <div class="glass pred-card g"><div class="pred-lb">Prediksi Bio-oil</div><div class="pred-v" id="p-oil">42.5 kg</div><div class="pred-delta ok" id="p-oil-d"><i class="fa-solid fa-arrow-up"></i> +2.3% dari target</div><span class="pred-status ps-g" id="p-oil-s">ON TRACK</span></div>
+    <div class="glass pred-card y"><div class="pred-lb">Prediksi Syngas</div><div class="pred-v" id="p-gas">18.2 m&sup3;</div><div class="pred-delta warn" id="p-gas-d"><i class="fa-solid fa-arrow-down"></i> -1.1% dari target</div><span class="pred-status ps-y" id="p-gas-s">WARNING</span></div>
+    <div class="glass pred-card n"><div class="pred-lb">Prediksi Biochar</div><div class="pred-v" id="p-char">15.8 kg</div><div class="pred-delta neu" id="p-char-d"><i class="fa-solid fa-minus"></i> Stabil</div><span class="pred-status ps-g" id="p-char-s">STABIL</span></div>
+  </div>
+  <div class="glass c"><div class="ct"><i class="fa-solid fa-chart-line"></i> Model Prediksi Yield 24 Jam</div><div class="cw xl"><canvas id="ch-pred"></canvas></div></div>
+</div>
+
+<!-- NOTIFIKASI -->
+<div id="pg-notif" class="pg">
+  <div class="ph"><div class="ph-l"><h1><i class="fa-solid fa-bell"></i> Notifikasi &amp; Alert</h1><p>Riwayat notifikasi sistem secara real-time</p></div></div>
+  <div class="glass c"><div class="notif-list" id="notif-full" style="max-height:none"></div></div>
+</div>
+
+<!-- SENSOR -->
+<div id="pg-sensor" class="pg">
+  <div class="ph"><div class="ph-l"><h1><i class="fa-solid fa-microchip"></i> Status Sensor</h1><p>Kondisi seluruh sensor IoT reaktor pirolisis</p></div></div>
+  <div class="sg-grid">
+    <div class="glass sensor-box up" id="sb-tmp"><div class="sensor-ico mi-o"><i class="fa-solid fa-temperature-three-quarters"></i></div><div class="sensor-nm">Sensor Suhu</div><div class="sensor-vl" id="sb-tmp-v" style="color:var(--orange)">450 &deg;C</div><div class="sensor-st ok" id="sb-tmp-s"><i class="fa-solid fa-check"></i> Aktif</div></div>
+    <div class="glass sensor-box up" id="sb-prs"><div class="sensor-ico mi-b"><i class="fa-solid fa-gauge"></i></div><div class="sensor-nm">Sensor Tekanan</div><div class="sensor-vl" id="sb-prs-v" style="color:var(--blue)">1.2 atm</div><div class="sensor-st ok" id="sb-prs-s"><i class="fa-solid fa-check"></i> Aktif</div></div>
+    <div class="glass sensor-box up" id="sb-flw"><div class="sensor-ico mi-g"><i class="fa-solid fa-wind"></i></div><div class="sensor-nm">Sensor Aliran Gas</div><div class="sensor-vl" id="sb-flw-v" style="color:var(--neon)">8.5 m&sup3;/jam</div><div class="sensor-st ok" id="sb-flw-s"><i class="fa-solid fa-check"></i> Aktif</div></div>
+  </div>
+</div>
+
+<!-- RIWAYAT -->
+<div id="pg-riwayat" class="pg">
+  <div class="ph"><div class="ph-l"><h1><i class="fa-solid fa-table-list"></i> Riwayat Produksi</h1><p>Data batch produksi sebelumnya</p></div></div>
+  <div class="glass c">
+    <div class="tscroll">
+      <table class="tbl">
+        <thead><tr><th>Batch</th><th>Tanggal</th><th>Bio-oil (L)</th><th>Syngas (m&sup3;)</th><th>Biochar (kg)</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td><strong>#10</strong></td><td>12/07/2026</td><td>40</td><td>15</td><td>14</td><td><span class="badge bg-g">Selesai</span></td></tr>
+          <tr><td><strong>#9</strong></td><td>10/07/2026</td><td>38</td><td>14</td><td>13</td><td><span class="badge bg-g">Selesai</span></td></tr>
+          <tr><td><strong>#8</strong></td><td>08/07/2026</td><td>41</td><td>16</td><td>14</td><td><span class="badge bg-g">Selesai</span></td></tr>
+          <tr><td><strong>#7</strong></td><td>06/07/2026</td><td>37</td><td>13</td><td>12</td><td><span class="badge bg-o">Revisi</span></td></tr>
+          <tr><td><strong>#6</strong></td><td>04/07/2026</td><td>39</td><td>15</td><td>13</td><td><span class="badge bg-g">Selesai</span></td></tr>
+          <tr><td><strong>#5</strong></td><td>02/07/2026</td><td>36</td><td>14</td><td>12</td><td><span class="badge bg-g">Selesai</span></td></tr>
+          <tr><td><strong>#4</strong></td><td>30/06/2026</td><td>35</td><td>13</td><td>11</td><td><span class="badge bg-b">Uji Coba</span></td></tr>
+          <tr><td><strong>#3</strong></td><td>28/06/2026</td><td>33</td><td>12</td><td>11</td><td><span class="badge bg-g">Selesai</span></td></tr>
+          <tr><td><strong>#2</strong></td><td>26/06/2026</td><td>31</td><td>11</td><td>10</td><td><span class="badge bg-g">Selesai</span></td></tr>
+          <tr><td><strong>#1</strong></td><td>24/06/2026</td><td>28</td><td>10</td><td>9</td><td><span class="badge bg-b">Uji Coba</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+</main>
+<div id="toast"><i class="fa-solid fa-circle-check"></i> <span id="tmsg"></span></div>
+
+<script>
+Chart.defaults.font.family="'Inter',sans-serif";
+Chart.defaults.color='#8b93a7';
+
+const titles={dash:'Dashboard Utama',trend:'Grafik Trend Real-Time',ai:'Prediksi AI',notif:'Notifikasi & Alert',sensor:'Status Sensor',riwayat:'Riwayat Produksi'};
+function go(id,el){
+  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.nav').forEach(n=>n.classList.remove('on'));
+  document.getElementById('pg-'+id).classList.add('on');
+  el.classList.add('on');
+  document.getElementById('ptitle').textContent=titles[id];
+  closeSB();
+}
+function toggleSB(){document.getElementById('sb').classList.toggle('open');document.getElementById('overlay').classList.toggle('show');}
+function closeSB(){document.getElementById('sb').classList.remove('open');document.getElementById('overlay').classList.remove('show');}
+
+let isLight=false;
+function toggleMode(){
+  isLight=!isLight;
+  document.body.classList.toggle('light',isLight);
+  document.getElementById('mtrack').classList.toggle('dark',!isLight);
+}
+
+function toast(msg){const el=document.getElementById('toast');document.getElementById('tmsg').textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),3000);}
+
+function tickClock(){const n=new Date();document.getElementById('clk').textContent=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0')+':'+String(n.getSeconds()).padStart(2,'0');}
+setInterval(tickClock,1000);tickClock();
+
+// STATE
+let S={tmp:450,prs:1.2,flw:8.5,oil:42.3};
+const TMAX=680,TWARN=600,PMAX=2.2,PW=1.8;
+
+let notifs=[];
+function addNotif(txt,lvl){
+  const n=new Date(),ts=n.toLocaleTimeString('id-ID');
+  notifs.unshift({txt,lvl,ts});
+  if(notifs.length>60)notifs.pop();
+  renderNotifs();
+}
+function iconFor(lvl){return lvl==='crit'?'fa-triangle-exclamation':lvl==='warn'?'fa-circle-exclamation':'fa-circle-check';}
+function renderNotifs(){
+  const mkRow=n=>`<div class="notif ${n.lvl}"><i class="fa-solid ${iconFor(n.lvl)} notif-ico" style="color:${n.lvl==='crit'?'var(--red)':n.lvl==='warn'?'var(--yellow)':'var(--neon)'}"></i><div><div class="notif-txt">${n.txt}</div><div class="notif-ts">${n.ts}</div></div></div>`;
+  document.getElementById('notif-full').innerHTML=notifs.length?notifs.map(mkRow).join(''):'<div style="text-align:center;color:var(--txm);padding:20px;font-size:11px">Belum ada notifikasi.</div>';
+  document.getElementById('notif-mini').innerHTML=notifs.slice(0,5).length?notifs.slice(0,5).map(mkRow).join(''):'<div style="text-align:center;color:var(--txm);padding:14px;font-size:11px">Belum ada notifikasi.</div>';
+  document.getElementById('notif-cnt').textContent=notifs.length;
+  const crit=notifs.filter(n=>n.lvl==='crit'||n.lvl==='warn').length;
+  document.getElementById('nb').textContent=crit;
+}
+addNotif('Suhu reaktor naik mendekati batas maksimal (680&deg;C)','warn');
+addNotif('Tekanan stabil dalam rentang aman','info');
+addNotif('Sensor aliran gas terdeteksi anomali ringan','warn');
+
+// CHARTS
+function mkTmpChart(id){
+  return new Chart(document.getElementById(id).getContext('2d'),{type:'line',data:{labels:Array.from({length:24},(_,i)=>i+'0s'),datasets:[{label:'Suhu °C',data:Array.from({length:24},()=>+(450+(Math.random()-.5)*20).toFixed(1)),borderColor:'#ff8a3d',backgroundColor:'rgba(255,138,61,.08)',fill:true,tension:.4,borderWidth:2,pointRadius:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,.04)'},ticks:{font:{size:9}}},y:{grid:{color:'rgba(255,255,255,.04)'},min:400,max:700,ticks:{font:{size:9},callback:v=>v+'°'}}}}});
+}
+function mkPrsChart(id){
+  return new Chart(document.getElementById(id).getContext('2d'),{type:'line',data:{labels:Array.from({length:24},(_,i)=>i+'0s'),datasets:[{label:'Tekanan atm',data:Array.from({length:24},()=>+(1.2+(Math.random()-.5)*.4).toFixed(2)),borderColor:'#3da5ff',backgroundColor:'rgba(61,165,255,.08)',fill:true,tension:.4,borderWidth:2,pointRadius:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,.04)'},ticks:{font:{size:9}}},y:{grid:{color:'rgba(255,255,255,.04)'},min:.5,max:2.5,ticks:{font:{size:9}}}}}});
+}
+const cTmp=mkTmpChart('ch-tmp'),cTmp2=mkTmpChart('ch-tmp2');
+const cPrs=mkPrsChart('ch-prs'),cPrs2=mkPrsChart('ch-prs2');
+
+function mkDailyChart(id){
+  return new Chart(document.getElementById(id).getContext('2d'),{type:'bar',data:{labels:['Sen','Sel','Rab','Kam','Jum','Sab','Min'],datasets:[
+    {label:'Bio-oil (L)',data:[38,40,37,42,41,39,42.3],backgroundColor:'rgba(255,255,255,.55)',borderRadius:4},
+    {label:'Syngas (m³)',data:[14,15,13,16,15,14,18.2],backgroundColor:'rgba(57,255,158,.65)',borderRadius:4},
+    {label:'Biochar (kg)',data:[13,14,12,14,13,13,15.8],backgroundColor:'rgba(255,138,61,.65)',borderRadius:4}
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{font:{size:10},color:'#8b93a7'}}},scales:{x:{grid:{display:false},ticks:{font:{size:9}}},y:{grid:{color:'rgba(255,255,255,.05)'},ticks:{font:{size:9}}}}}});
+}
+const cDaily=mkDailyChart('ch-daily'),cDaily2=mkDailyChart('ch-daily2');
+
+const cPred=new Chart(document.getElementById('ch-pred').getContext('2d'),{type:'line',data:{labels:Array.from({length:24},(_,i)=>i+'h'),datasets:[
+  {label:'Bio-oil (kg)',data:Array.from({length:24},(_,i)=>+(20+i*1.05+Math.random()*1.5).toFixed(1)),borderColor:'#39ff9e',backgroundColor:'rgba(57,255,158,.06)',fill:true,tension:.4,borderWidth:2,pointRadius:0},
+  {label:'Syngas (m³)',data:Array.from({length:24},(_,i)=>+(9+i*.42-Math.random()*1).toFixed(1)),borderColor:'#ffcf3d',backgroundColor:'transparent',tension:.4,borderWidth:2,pointRadius:0},
+  {label:'Biochar (kg)',data:Array.from({length:24},(_,i)=>+(8+i*.36+Math.random()*.5).toFixed(1)),borderColor:'#3da5ff',backgroundColor:'transparent',tension:.4,borderWidth:2,pointRadius:0}
+]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{font:{size:10},color:'#8b93a7'}}},scales:{x:{grid:{color:'rgba(255,255,255,.04)'},ticks:{font:{size:9}}},y:{grid:{color:'rgba(255,255,255,.04)'},ticks:{font:{size:9}}}}}});
+
+function sel(id,v){const el=document.getElementById(id);if(el)el.innerHTML=v;}
+function cls(id,c){const el=document.getElementById(id);if(el)el.className=c;}
+
+function updateSensorBox(prefix,ok,valTxt){
+  const box=document.getElementById(prefix);
+  box.classList.toggle('up',ok);box.classList.toggle('down',!ok);
+  sel(prefix+'-v',valTxt);
+  document.getElementById(prefix+'-v').style.color=ok?getComputedStyle(box.querySelector('.sensor-ico')).color:'#ff4d5e';
+  const st=document.getElementById(prefix+'-s');
+  st.className='sensor-st '+(ok?'ok':'bad');
+  st.innerHTML=ok?'<i class="fa-solid fa-check"></i> Aktif':'<i class="fa-solid fa-xmark"></i> Mati';
+}
+
+function refreshData(){
+  updateAll(true);
+  toast('Data berhasil dimuat ulang.');
+}
+
+function updateAll(force){
+  S.tmp=Math.max(380,Math.min(720,S.tmp+(Math.random()-.48)*14));
+  S.prs=Math.max(.6,Math.min(2.4,S.prs+(Math.random()-.48)*.08));
+  S.flw=Math.max(4,Math.min(13,S.flw+(Math.random()-.5)*.6));
+  S.oil=+(S.oil+Math.random()*.3).toFixed(1);
+
+  sel('v-tmp',S.tmp.toFixed(0));sel('v-prs',S.prs.toFixed(1));sel('v-flw',S.flw.toFixed(1));sel('v-oil',S.oil.toFixed(1));
+
+  const tCrit=S.tmp>=TMAX,tWarn=S.tmp>=TWARN&&S.tmp<TMAX;
+  const pCrit=S.prs>=PMAX,pWarn=S.prs>=PW&&S.prs<PMAX;
+  const fOk=S.flw>=5&&S.flw<=12;
+
+  const stmp=document.getElementById('s-tmp');stmp.className='mst '+(tCrit?'bad':tWarn?'warn':'ok');stmp.innerHTML=tCrit?'<i class="fa-solid fa-triangle-exclamation"></i> Kritis!':tWarn?'<i class="fa-solid fa-circle-exclamation"></i> Mendekati batas':'<i class="fa-solid fa-check"></i> Stabil';
+  const sprs=document.getElementById('s-prs');sprs.className='mst '+(pCrit?'bad':pWarn?'warn':'ok');sprs.innerHTML=pCrit?'<i class="fa-solid fa-triangle-exclamation"></i> Kritis!':pWarn?'<i class="fa-solid fa-circle-exclamation"></i> Meningkat':'<i class="fa-solid fa-check"></i> Aman';
+  const sflw=document.getElementById('s-flw');sflw.className='mst '+(fOk?'ok':'warn');sflw.innerHTML=fOk?'<i class="fa-solid fa-check"></i> Normal':'<i class="fa-solid fa-circle-exclamation"></i> Anomali terdeteksi';
+
+  updateSensorBox('sb-tmp',true,S.tmp.toFixed(0)+' &deg;C');
+  updateSensorBox('sb-prs',true,S.prs.toFixed(1)+' atm');
+  updateSensorBox('sb-flw',fOk,S.flw.toFixed(1)+' m&sup3;/jam');
+
+  [cTmp,cTmp2].forEach(c=>{c.data.datasets[0].data.push(+S.tmp.toFixed(1));c.data.datasets[0].data.shift();c.update('none');});
+  [cPrs,cPrs2].forEach(c=>{c.data.datasets[0].data.push(+S.prs.toFixed(2));c.data.datasets[0].data.shift();c.update('none');});
+
+  if(tCrit&&(force||Math.random()<.5))addNotif('Suhu reaktor kritis: '+S.tmp.toFixed(0)+'&deg;C — melebihi batas maksimal ('+TMAX+'&deg;C)','crit');
+  else if(tWarn&&(force||Math.random()<.3))addNotif('Suhu reaktor naik mendekati batas maksimal ('+TMAX+'&deg;C), saat ini '+S.tmp.toFixed(0)+'&deg;C','warn');
+  if(pCrit&&(force||Math.random()<.5))addNotif('Tekanan reaktor kritis: '+S.prs.toFixed(1)+' atm — segera periksa katup pelepas','crit');
+  else if(!pCrit&&!pWarn&&force)addNotif('Tekanan stabil dalam rentang aman ('+S.prs.toFixed(1)+' atm)','info');
+  if(!fOk&&(force||Math.random()<.4))addNotif('Sensor aliran gas terdeteksi anomali: '+S.flw.toFixed(1)+' m&sup3;/jam','warn');
+}
+updateAll(true);
+setInterval(updateAll,5000);
+</script>
+</body>
+</html>
