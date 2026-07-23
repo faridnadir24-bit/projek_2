@@ -109,6 +109,9 @@ body{
 .si{width:76px;padding:6px 9px;border:1.5px solid var(--glassb);border-radius:8px;font-size:11.5px;font-weight:600;font-family:var(--mono);color:#fff;background:rgba(255,255,255,.03);text-align:center;outline:none}
 .si:focus{border-color:var(--orange)}
 .su{font-size:9.5px;color:var(--txm);font-weight:600}
+.gauge-card{transition:box-shadow .2s}
+.gauge-card:hover{box-shadow:0 0 0 1px rgba(255,255,255,.08),0 10px 30px rgba(0,0,0,.4)}
+.gauge-card:hover .gauge-num{transform:scale(1.22)}
 
 /* GRID */
 .g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
@@ -161,11 +164,15 @@ body{
 .ps-r{background:rgba(255,77,94,.18);color:var(--red)}
 
 /* NOTIFICATIONS */
-.notif{display:flex;gap:10px;padding:10px 11px;border-radius:10px;margin-bottom:8px;align-items:flex-start;border-left:3px solid}
+.notif{display:flex;gap:10px;padding:10px 11px;border-radius:10px;margin-bottom:8px;align-items:flex-start;border-left:4px solid;position:relative}
 .notif:last-child{margin-bottom:0}
-.notif.crit{background:var(--red-dim);border-color:var(--red)}
-.notif.warn{background:var(--yellow-dim);border-color:var(--yellow)}
-.notif.info{background:var(--neon-dim);border-color:var(--neon)}
+.notif.crit{background:rgba(255,77,94,.16);border-color:var(--red);box-shadow:inset 0 0 0 1px rgba(255,77,94,.25)}
+.notif.warn{background:rgba(255,207,61,.14);border-color:var(--yellow);box-shadow:inset 0 0 0 1px rgba(255,207,61,.22)}
+.notif.info{background:rgba(61,255,160,.1);border-color:var(--neon);box-shadow:inset 0 0 0 1px rgba(61,255,160,.2)}
+.notif-badge{position:absolute;top:8px;right:9px;font-size:7.5px;font-weight:800;letter-spacing:.6px;padding:2px 6px;border-radius:20px;text-transform:uppercase}
+.notif-badge.crit{background:var(--red);color:#2b0004}
+.notif-badge.warn{background:var(--yellow);color:#332400}
+.notif-badge.info{background:var(--neon);color:#04150c}
 .notif-ico{font-size:13px;margin-top:1px;flex-shrink:0}
 .notif-txt{flex:1;font-size:11px;color:#e7eaf2;line-height:1.4}
 .notif-ts{font-size:8.5px;color:var(--txs);font-family:var(--mono);margin-top:3px}
@@ -278,18 +285,22 @@ body.light .sb-foot p{color:#8b93a7}
     <div class="glass mcard mc-oil"><div class="mic mi-w"><i class="fa-solid fa-oil-can"></i></div><div class="mlb">Produksi Bio-oil</div><div class="mv"><span id="v-oil">42.3</span><span> L</span></div><div class="mst neu"><i class="fa-solid fa-arrow-up"></i> Akumulasi hari ini</div><div class="mtrend" id="t-oil" style="font-size:9px;color:var(--txs);margin-top:3px">&mdash;</div></div>
   </div>
   <div class="g3">
-    <div class="glass c" style="text-align:center"><div class="ct" style="justify-content:center"><i class="fa-solid fa-gauge-high"></i> Gauge Suhu</div><div class="cw" style="height:130px"><canvas id="gg-tmp"></canvas></div><div style="font-family:var(--mono);font-size:18px;font-weight:700;color:var(--orange);margin-top:-6px" id="gg-tmp-v">454°C</div><div style="font-size:9px;color:var(--txm)">Rentang 0&ndash;700&deg;C</div></div>
-    <div class="glass c" style="text-align:center"><div class="ct" style="justify-content:center"><i class="fa-solid fa-gauge-high"></i> Gauge Tekanan</div><div class="cw" style="height:130px"><canvas id="gg-prs"></canvas></div><div style="font-family:var(--mono);font-size:18px;font-weight:700;color:var(--blue);margin-top:-6px" id="gg-prs-v">1.2 atm</div><div style="font-size:9px;color:var(--txm)">Rentang 0&ndash;2 atm</div></div>
-    <div class="glass c" style="text-align:center"><div class="ct" style="justify-content:center"><i class="fa-solid fa-gauge-high"></i> Gauge Aliran Gas</div><div class="cw" style="height:130px"><canvas id="gg-flw"></canvas></div><div style="font-family:var(--mono);font-size:18px;font-weight:700;color:var(--neon);margin-top:-6px" id="gg-flw-v">8.7 m&sup3;/jam</div><div style="font-size:9px;color:var(--txm)">Rentang 0&ndash;15 m&sup3;/jam</div></div>
+    <div class="glass c gauge-card" style="text-align:center"><div class="ct" style="justify-content:center"><i class="fa-solid fa-gauge-high"></i> Gauge Suhu</div><div class="cw" style="height:130px"><canvas id="gg-tmp"></canvas></div><div class="gauge-num" style="font-family:var(--mono);font-size:18px;font-weight:700;color:var(--orange);margin-top:-6px;transition:transform .2s" id="gg-tmp-v">454°C</div><div style="font-size:9px;color:var(--txm)">Rentang 0&ndash;700&deg;C</div></div>
+    <div class="glass c gauge-card" style="text-align:center"><div class="ct" style="justify-content:center"><i class="fa-solid fa-gauge-high"></i> Gauge Tekanan</div><div class="cw" style="height:130px"><canvas id="gg-prs"></canvas></div><div class="gauge-num" style="font-family:var(--mono);font-size:18px;font-weight:700;color:var(--blue);margin-top:-6px;transition:transform .2s" id="gg-prs-v">1.2 atm</div><div style="font-size:9px;color:var(--txm)">Rentang 0&ndash;2 atm</div></div>
+    <div class="glass c gauge-card" style="text-align:center"><div class="ct" style="justify-content:center"><i class="fa-solid fa-gauge-high"></i> Gauge Aliran Gas</div><div class="cw" style="height:130px"><canvas id="gg-flw"></canvas></div><div class="gauge-num" style="font-family:var(--mono);font-size:18px;font-weight:700;color:var(--neon);margin-top:-6px;transition:transform .2s" id="gg-flw-v">8.7 m&sup3;/jam</div><div style="font-size:9px;color:var(--txm)">Rentang 0&ndash;15 m&sup3;/jam</div></div>
   </div>
   <div class="g2">
     <div class="glass c"><div class="ct"><i class="fa-solid fa-chart-line"></i> Suhu vs Waktu <span class="ct-r">Live · 5 detik</span></div>
       <div style="display:flex;gap:6px;margin-bottom:8px" id="tog-tmp"></div>
       <div class="cw lg"><canvas id="ch-tmp"></canvas></div></div>
-    <div class="glass c"><div class="ct"><i class="fa-solid fa-chart-line"></i> Tekanan vs Waktu <span class="ct-r">Live · 5 detik</span></div><div class="cw lg"><canvas id="ch-prs"></canvas></div></div>
+    <div class="glass c"><div class="ct"><i class="fa-solid fa-chart-line"></i> Tekanan vs Waktu <span class="ct-r">Live · 5 detik</span></div>
+      <div style="display:flex;gap:6px;margin-bottom:8px" id="tog-prs"></div>
+      <div class="cw lg"><canvas id="ch-prs"></canvas></div></div>
   </div>
   <div class="g2">
-    <div class="glass c"><div class="ct"><i class="fa-solid fa-chart-column"></i> Produksi Harian <span class="ct-r">Stacked</span></div><div class="cw md"><canvas id="ch-daily"></canvas></div></div>
+    <div class="glass c"><div class="ct"><i class="fa-solid fa-chart-column"></i> Produksi Harian <span class="ct-r">Stacked</span></div>
+      <div style="display:flex;gap:6px;margin-bottom:8px" id="tog-daily"></div>
+      <div class="cw md"><canvas id="ch-daily"></canvas></div></div>
     <div class="glass c">
       <div class="ct"><i class="fa-solid fa-bell"></i> Notifikasi Terbaru <span class="ct-r" id="notif-cnt">0</span></div>
       <div class="notif-list" id="notif-mini" style="max-height:150px"></div>
@@ -439,7 +450,8 @@ function addNotif(txt,lvl){
 }
 function iconFor(lvl){return lvl==='crit'?'fa-triangle-exclamation':lvl==='warn'?'fa-circle-exclamation':'fa-circle-check';}
 function renderNotifs(){
-  const mkRow=n=>`<div class="notif ${n.lvl}"><i class="fa-solid ${iconFor(n.lvl)} notif-ico" style="color:${n.lvl==='crit'?'var(--red)':n.lvl==='warn'?'var(--yellow)':'var(--neon)'}"></i><div><div class="notif-txt">${n.txt}</div><div class="notif-ts">${n.ts}</div></div></div>`;
+  const lvlTxt=l=>l==='crit'?'KRITIS':l==='warn'?'WARNING':'INFO';
+  const mkRow=n=>`<div class="notif ${n.lvl}"><i class="fa-solid ${iconFor(n.lvl)} notif-ico" style="color:${n.lvl==='crit'?'var(--red)':n.lvl==='warn'?'var(--yellow)':'var(--neon)'}"></i><div style="flex:1;padding-right:46px"><div class="notif-txt">${n.txt}</div><div class="notif-ts">${n.ts}</div></div><span class="notif-badge ${n.lvl}">${lvlTxt(n.lvl)}</span></div>`;
   document.getElementById('notif-full').innerHTML=notifs.length?notifs.map(mkRow).join(''):'<div style="text-align:center;color:var(--txm);padding:20px;font-size:11px">Belum ada notifikasi.</div>';
   document.getElementById('notif-mini').innerHTML=notifs.slice(0,5).length?notifs.slice(0,5).map(mkRow).join(''):'<div style="text-align:center;color:var(--txm);padding:14px;font-size:11px">Belum ada notifikasi.</div>';
   document.getElementById('notif-cnt').textContent=notifs.length;
@@ -459,22 +471,27 @@ function mkTmpChart(id){
   ]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{position:'top',labels:{font:{size:9},color:'#8b93a7',boxWidth:10}},tooltip:{callbacks:{label:c=>c.dataset.label+': '+c.parsed.y+'°C'}}},scales:{x:{grid:{color:'rgba(255,255,255,.04)'},ticks:{font:{size:9}}},y:{grid:{color:'rgba(255,255,255,.04)'},min:380,max:720,ticks:{font:{size:9},callback:v=>v+'°'}}}}});
 }
 function mkPrsChart(id){
-  return new Chart(document.getElementById(id).getContext('2d'),{type:'line',data:{labels:Array.from({length:24},(_,i)=>i+'0s'),datasets:[{label:'Tekanan atm',data:Array.from({length:24},()=>+(1.2+(Math.random()-.5)*.4).toFixed(2)),borderColor:'#3da5ff',backgroundColor:'rgba(61,165,255,.08)',fill:true,tension:.4,borderWidth:2,pointRadius:0}]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>'Tekanan: '+c.parsed.y+' atm'}}},scales:{x:{grid:{color:'rgba(255,255,255,.04)'},ticks:{font:{size:9}}},y:{grid:{color:'rgba(255,255,255,.04)'},min:.5,max:2.5,ticks:{font:{size:9}}}}}});
+  return new Chart(document.getElementById(id).getContext('2d'),{type:'line',data:{labels:Array.from({length:24},(_,i)=>i+'0s'),datasets:[
+    {label:'Tekanan atm',data:Array.from({length:24},()=>+(1.2+(Math.random()-.5)*.4).toFixed(2)),borderColor:'#3da5ff',backgroundColor:'rgba(61,165,255,.08)',fill:true,tension:.4,borderWidth:2,pointRadius:0},
+    {label:'Batas Kritis 2.2atm',data:Array(24).fill(2.2),borderColor:'rgba(255,77,94,.6)',borderDash:[6,4],borderWidth:1.5,pointRadius:0,fill:false},
+    {label:'Target 1.2atm',data:Array(24).fill(1.2),borderColor:'rgba(57,255,158,.5)',borderDash:[6,4],borderWidth:1.5,pointRadius:0,fill:false}
+  ]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{position:'top',labels:{font:{size:9},color:'#8b93a7',boxWidth:10}},tooltip:{callbacks:{label:c=>c.dataset.label+': '+c.parsed.y+' atm'}}},scales:{x:{grid:{color:'rgba(255,255,255,.04)'},ticks:{font:{size:9}}},y:{grid:{color:'rgba(255,255,255,.04)'},min:.5,max:2.5,ticks:{font:{size:9}}}}}});
 }
 const cTmp=mkTmpChart('ch-tmp'),cTmp2=mkTmpChart('ch-tmp2');
 const cPrs=mkPrsChart('ch-prs'),cPrs2=mkPrsChart('ch-prs2');
 
-// Toggle series buttons for suhu chart
-(function(){
-  const box=document.getElementById('tog-tmp');if(!box)return;
-  const labels=['Suhu °C','Batas Kritis','Target'];
+// Toggle series buttons
+function buildToggle(boxId,chart,labels){
+  const box=document.getElementById(boxId);if(!box)return;
   labels.forEach((lb,i)=>{
     const b=document.createElement('div');
     b.className='tabbtn on';b.style.cssText='padding:4px 10px;font-size:9.5px';b.textContent=lb;
-    b.onclick=()=>{const meta=cTmp.getDatasetMeta(i);meta.hidden=!meta.hidden;cTmp.update();b.classList.toggle('on',!meta.hidden);};
+    b.onclick=()=>{const meta=chart.getDatasetMeta(i);meta.hidden=!meta.hidden;chart.update();b.classList.toggle('on',!meta.hidden);};
     box.appendChild(b);
   });
-})();
+}
+buildToggle('tog-tmp',cTmp,['Suhu °C','Batas Kritis','Target']);
+buildToggle('tog-prs',cPrs,['Tekanan atm','Batas Kritis','Target']);
 
 function mkDailyChart(id){
   return new Chart(document.getElementById(id).getContext('2d'),{type:'bar',data:{labels:['Sen','Sel','Rab','Kam','Jum','Sab','Min'],datasets:[
@@ -484,6 +501,7 @@ function mkDailyChart(id){
   ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{font:{size:10},color:'#8b93a7'}},tooltip:{mode:'index',intersect:false}},scales:{x:{grid:{display:false},stacked:true,ticks:{font:{size:9}}},y:{grid:{color:'rgba(255,255,255,.05)'},stacked:true,ticks:{font:{size:9}}}}}});
 }
 const cDaily=mkDailyChart('ch-daily'),cDaily2=mkDailyChart('ch-daily2');
+buildToggle('tog-daily',cDaily,['Bio-oil','Syngas','Biochar']);
 
 const predBase=Array.from({length:24},(_,i)=>+(20+i*1.05+Math.random()*1.5).toFixed(1));
 const cPred=new Chart(document.getElementById('ch-pred').getContext('2d'),{type:'line',data:{labels:Array.from({length:24},(_,i)=>i+'h'),datasets:[
@@ -495,12 +513,12 @@ const cPred=new Chart(document.getElementById('ch-pred').getContext('2d'),{type:
 ]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{position:'top',labels:{font:{size:9},color:'#8b93a7',boxWidth:10,filter:i=>i.text!=='Batas Atas'&&i.text!=='Batas Bawah'}}},scales:{x:{grid:{color:'rgba(255,255,255,.04)'},ticks:{font:{size:9}}},y:{grid:{color:'rgba(255,255,255,.04)'},ticks:{font:{size:9}}}}}});
 
 // GAUGE METERS (half-donut)
-function mkGauge(id,val,max,color){
-  return new Chart(document.getElementById(id).getContext('2d'),{type:'doughnut',data:{datasets:[{data:[val,max-val],backgroundColor:[color,'rgba(255,255,255,.06)'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,circumference:180,rotation:270,cutout:'75%',plugins:{legend:{display:false},tooltip:{enabled:false}}}});
+function mkGauge(id,val,max,color,unit){
+  return new Chart(document.getElementById(id).getContext('2d'),{type:'doughnut',data:{labels:['Nilai saat ini','Sisa rentang'],datasets:[{data:[val,max-val],backgroundColor:[color,'rgba(255,255,255,.06)'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,circumference:180,rotation:270,cutout:'75%',plugins:{legend:{display:false},tooltip:{enabled:true,filter:c=>c.dataIndex===0,callbacks:{label:c=>'Nilai: '+c.parsed+' '+unit}}}}});
 }
-const gTmp=mkGauge('gg-tmp',454,700,'#ff7a29');
-const gPrs=mkGauge('gg-prs',1.2,2,'#3da5ff');
-const gFlw=mkGauge('gg-flw',8.7,15,'#3dffa0');
+const gTmp=mkGauge('gg-tmp',454,700,'#ff7a29','°C');
+const gPrs=mkGauge('gg-prs',1.2,2,'#3da5ff','atm');
+const gFlw=mkGauge('gg-flw',8.7,15,'#3dffa0','m³/jam');
 
 function sel(id,v){const el=document.getElementById(id);if(el)el.innerHTML=v;}
 function cls(id,c){const el=document.getElementById(id);if(el)el.className=c;}
