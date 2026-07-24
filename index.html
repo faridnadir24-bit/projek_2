@@ -65,7 +65,7 @@ body{
 .mtrack.dark .mknob{left:19px;background:var(--neon)}
 
 /* TOPBAR */
-#tb{grid-row:1;grid-column:2;display:flex;align-items:center;padding:0 20px;gap:12px;border-bottom:1px solid rgba(61,255,160,.15);background:rgba(5,7,9,.7);backdrop-filter:blur(14px);min-width:0;box-shadow:0 2px 20px rgba(0,0,0,.35)}
+#tb{grid-row:1;grid-column:2;display:flex;align-items:center;padding:0 20px;gap:12px;border-bottom:1px solid rgba(61,255,160,.15);background:rgba(5,7,9,.7);backdrop-filter:blur(14px);min-width:0;box-shadow:0 2px 20px rgba(0,0,0,.35);position:relative;z-index:5}
 .tb-title h2{font-family:var(--disp);font-size:14px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tb-title p{font-size:9.5px;color:var(--txm);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tb-title{flex:1;min-width:0}
@@ -79,7 +79,7 @@ body{
 .sb-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:190}
 
 /* MAIN */
-#main{grid-row:2;grid-column:2;overflow-y:auto;padding:16px 18px 32px}
+#main{grid-row:2;grid-column:2;overflow-y:auto;padding:16px 18px 32px;position:relative;z-index:5}
 .pg{display:none}.pg.on{display:block;animation:fadein .3s ease}
 @keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 .ph{margin-bottom:16px;display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap}
@@ -112,6 +112,22 @@ body{
 .gauge-card{transition:box-shadow .2s}
 .gauge-card:hover{box-shadow:0 0 0 1px rgba(255,255,255,.08),0 10px 30px rgba(0,0,0,.4)}
 .gauge-card:hover .gauge-num{transform:scale(1.22)}
+
+/* FLOW DIAGRAM */
+.flow{display:flex;align-items:center;justify-content:space-between;padding:8px 0 6px;flex-wrap:wrap;gap:4px}
+.fn{display:flex;flex-direction:column;align-items:center;gap:5px;min-width:80px}
+.fc{width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;border:2px solid;flex-shrink:0}
+.fc-g{background:var(--neon-dim);border-color:var(--neon);color:var(--neon)}
+.fc-o{background:var(--orange-dim);border-color:var(--orange);color:var(--orange);animation:pu2 1.6s infinite}
+.fc-b{background:var(--blue-dim);border-color:var(--blue);color:var(--blue)}
+@keyframes pu2{0%,100%{box-shadow:0 0 0 0 rgba(255,122,41,.4)}50%{box-shadow:0 0 0 6px rgba(255,122,41,0)}}
+.fl{font-size:10px;font-weight:700;color:#fff;text-align:center}
+.fs{font-size:8.5px;color:var(--txm);text-align:center}
+.fa{flex:1;display:flex;align-items:center;padding:0 4px;max-width:52px;min-width:22px}
+.fal{height:2px;flex:1;background:linear-gradient(90deg,var(--orange),var(--neon));border-radius:2px;position:relative;overflow:hidden}
+.fal::after{content:'';position:absolute;top:0;left:-60%;width:50%;height:100%;background:rgba(255,255,255,.65);animation:flo 1.5s linear infinite}
+@keyframes flo{to{left:110%}}
+.fah{width:0;height:0;border-top:4px solid transparent;border-bottom:4px solid transparent;border-left:7px solid var(--neon)}
 
 /* GRID */
 .g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
@@ -202,6 +218,28 @@ body{
 #toast.show{opacity:1;transform:translateY(0)}
 #toast i{color:var(--neon)}
 
+/* MODAL */
+#modalOverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(3px);z-index:500;align-items:center;justify-content:center;padding:16px}
+#modalOverlay.show{display:flex}
+#cmpOverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(3px);z-index:500;align-items:center;justify-content:center;padding:16px}
+#cmpOverlay.show{display:flex}
+.modal{background:#0e1512;border:1px solid rgba(61,255,160,.2);border-radius:14px;padding:20px;max-width:420px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.6);animation:modalIn .2s ease}
+@keyframes modalIn{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+.modal-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.modal-h h3{font-family:var(--disp);font-size:15px;font-weight:800;color:#fff}
+.modal-x{cursor:pointer;color:var(--txm);font-size:16px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:8px}
+.modal-x:hover{background:rgba(255,255,255,.06);color:#fff}
+.modal-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:11.5px}
+.modal-row:last-child{border-bottom:none}
+.modal-row span:first-child{color:var(--txm)}
+.modal-row span:last-child{font-weight:700;color:#fff;font-family:var(--mono)}
+
+/* SEARCH BOX */
+.searchbox{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.03);border:1px solid var(--glassb);border-radius:9px;padding:8px 12px;margin-bottom:12px}
+.searchbox input{flex:1;background:transparent;border:none;outline:none;color:#fff;font-size:11.5px;font-family:var(--sans)}
+.searchbox input::placeholder{color:var(--txs)}
+.searchbox i{color:var(--txm);font-size:11px}
+
 /* LIGHT MODE OVERRIDE */
 body.light{
   background:linear-gradient(160deg,#f4f6fb,#eef1f8 55%,#e9edf7);color:#1b2233;
@@ -235,6 +273,7 @@ body.light .sb-foot p{color:#8b93a7}
 </style>
 </head>
 <body>
+<canvas id="particles" style="position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.5"></canvas>
 <aside id="sb">
   <div class="sb-brand">
     <div class="sb-logo">
@@ -243,6 +282,8 @@ body.light .sb-foot p{color:#8b93a7}
     </div>
     <div class="sb-conn on" id="connBox"><div class="dot-pulse" id="connDot"></div><span id="connTxt">Real-time</span></div>
     <div class="mode-toggle" onclick="toggleMode()"><span>Dark / Light</span><div class="mtrack dark" id="mtrack"><div class="mknob"></div></div></div>
+    <div class="mode-toggle" onclick="toggleSound()"><span>Suara Alarm</span><div class="mtrack" id="strack"><div class="mknob"></div></div></div>
+    <div class="mode-toggle" onclick="togglePush()"><span>Notif Browser</span><div class="mtrack" id="ptrack"><div class="mknob"></div></div></div>
   </div>
   <div class="sb-sec">Monitoring Utama</div>
   <div class="nav on" onclick="go('dash',this)"><i class="fa-solid fa-gauge-high"></i> Dashboard Utama</div>
@@ -253,6 +294,7 @@ body.light .sb-foot p{color:#8b93a7}
   <div class="nav" onclick="go('sensor',this)"><i class="fa-solid fa-microchip"></i> Status Sensor</div>
   <div class="sb-sec">Riwayat</div>
   <div class="nav" onclick="go('riwayat',this)"><i class="fa-solid fa-table-list"></i> Riwayat Produksi</div>
+  <div class="nav" onclick="go('bantuan',this)"><i class="fa-solid fa-circle-question"></i> Bantuan</div>
   <div class="sb-foot"><p>PYRO-AI v1.0 &middot; Pirolisis kotoran ayam<br>menjadi bio-oil, syngas &amp; biochar<br>&mdash; Farid</p></div>
 </aside>
 <div class="sb-overlay" id="overlay" onclick="closeSB()"></div>
@@ -312,9 +354,56 @@ body.light .sb-foot p{color:#8b93a7}
 <!-- TREND -->
 <div id="pg-trend" class="pg">
   <div class="ph"><div class="ph-l"><h1><i class="fa-solid fa-chart-line"></i> Grafik Trend Real-Time</h1><p>Suhu, tekanan, dan produksi harian reaktor pirolisis</p></div></div>
+
+  <div class="glass c mb">
+    <div class="ct"><i class="fa-solid fa-diagram-project"></i> Alur Proses Pirolisis Kotoran Ayam</div>
+    <div class="flow">
+      <div class="fn"><div class="fc fc-b"><i class="fa-solid fa-boxes-stacked"></i></div><div class="fl">Feedstock</div><div class="fs">Kotoran ayam kering</div></div>
+      <div class="fa"><div class="fal"></div><div class="fah"></div></div>
+      <div class="fn"><div class="fc fc-o" id="fnode-reactor"><i class="fa-solid fa-fire-burner"></i></div><div class="fl">Reaktor Pirolisis</div><div class="fs" id="fnode-reactor-s">450&deg;C tanpa O&#8322;</div></div>
+      <div class="fa"><div class="fal"></div><div class="fah"></div></div>
+      <div class="fn"><div class="fc fc-b"><i class="fa-solid fa-wind"></i></div><div class="fl">Kondensor</div><div class="fs">Pemisah uap &amp; gas</div></div>
+      <div class="fa"><div class="fal"></div><div class="fah"></div></div>
+      <div class="fn"><div class="fc fc-g"><i class="fa-solid fa-oil-can"></i></div><div class="fl">Bio-oil</div><div class="fs">Cairan hasil kondensasi</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:9px;margin-top:10px">
+      <div style="background:rgba(255,122,41,.08);border:1px solid rgba(255,122,41,.2);border-radius:9px;padding:10px"><div style="font-size:9px;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Tahap 1 &middot; Pengeringan</div><div style="font-size:10px;color:var(--txm);line-height:1.5">Kadar air diturunkan hingga &lt;15% sebelum masuk reaktor</div></div>
+      <div style="background:rgba(255,207,61,.08);border:1px solid rgba(255,207,61,.2);border-radius:9px;padding:10px"><div style="font-size:9px;font-weight:700;color:var(--yellow);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Tahap 2 &middot; Dekomposisi Termal</div><div style="font-size:10px;color:var(--txm);line-height:1.5">Pemanasan tanpa oksigen memecah rantai organik kompleks</div></div>
+      <div style="background:rgba(61,165,255,.08);border:1px solid rgba(61,165,255,.2);border-radius:9px;padding:10px"><div style="font-size:9px;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Tahap 3 &middot; Kondensasi</div><div style="font-size:10px;color:var(--txm);line-height:1.5">Uap didinginkan menjadi bio-oil, sisa gas jadi syngas</div></div>
+      <div style="background:rgba(61,255,160,.08);border:1px solid rgba(61,255,160,.2);border-radius:9px;padding:10px"><div style="font-size:9px;font-weight:700;color:var(--neon);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Tahap 4 &middot; Pemisahan Produk</div><div style="font-size:10px;color:var(--txm);line-height:1.5">Bio-oil, syngas, dan biochar dipisah &amp; ditampung</div></div>
+    </div>
+  </div>
+
+  <div class="g2 mb">
+    <div class="glass c">
+      <div class="ct"><i class="fa-solid fa-list-check"></i> Spesifikasi Teknis Reaktor</div>
+      <div class="sr"><div class="sr-i"><div class="sr-n">Kapasitas Feedstock</div><div class="sr-d">Per siklus operasi</div></div><div class="sr-inp"><span class="su" style="font-family:var(--mono);color:#fff">25 kg</span></div></div>
+      <div class="sr"><div class="sr-i"><div class="sr-n">Suhu Operasi</div><div class="sr-d">Rentang pirolisis lambat</div></div><div class="sr-inp"><span class="su" style="font-family:var(--mono);color:#fff">400&ndash;500&deg;C</span></div></div>
+      <div class="sr"><div class="sr-i"><div class="sr-n">Waktu Tinggal (Residence Time)</div><div class="sr-d">Durasi bahan di reaktor</div></div><div class="sr-inp"><span class="su" style="font-family:var(--mono);color:#fff">45&ndash;60 menit</span></div></div>
+      <div class="sr"><div class="sr-i"><div class="sr-n">Rasio Konversi Bio-oil</div><div class="sr-d">Dari total feedstock kering</div></div><div class="sr-inp"><span class="su" style="font-family:var(--mono);color:#fff">~35&ndash;40%</span></div></div>
+    </div>
+    <div class="glass c">
+      <div class="ct"><i class="fa-solid fa-microchip"></i> Instrumentasi &amp; Sensor</div>
+      <div class="sr"><div class="sr-i"><div class="sr-n">Sensor Suhu</div><div class="sr-d">Thermocouple type-K</div></div><div class="sr-inp"><span class="su" style="font-family:var(--mono);color:#fff">&plusmn;2&deg;C</span></div></div>
+      <div class="sr"><div class="sr-i"><div class="sr-n">Sensor Tekanan</div><div class="sr-d">Transduser tekanan gas</div></div><div class="sr-inp"><span class="su" style="font-family:var(--mono);color:#fff">0&ndash;2.5 atm</span></div></div>
+      <div class="sr"><div class="sr-i"><div class="sr-n">Sensor Aliran Gas</div><div class="sr-d">Flow meter syngas keluar</div></div><div class="sr-inp"><span class="su" style="font-family:var(--mono);color:#fff">0&ndash;15 m&sup3;/jam</span></div></div>
+      <div class="sr"><div class="sr-i"><div class="sr-n">Interval Logging</div><div class="sr-d">Frekuensi kirim data ke dashboard</div></div><div class="sr-inp"><span class="su" style="font-family:var(--mono);color:#fff">5 detik</span></div></div>
+    </div>
+  </div>
+
   <div class="glass c mb"><div class="ct"><i class="fa-solid fa-temperature-three-quarters"></i> Suhu Reaktor vs Waktu</div><div class="cw xl"><canvas id="ch-tmp2"></canvas></div></div>
   <div class="glass c mb"><div class="ct"><i class="fa-solid fa-gauge"></i> Tekanan Reaktor vs Waktu</div><div class="cw xl"><canvas id="ch-prs2"></canvas></div></div>
   <div class="glass c"><div class="ct"><i class="fa-solid fa-chart-column"></i> Produksi Harian &mdash; Bio-oil, Syngas, Biochar</div><div class="cw lg"><canvas id="ch-daily2"></canvas></div></div>
+
+  <div class="glass c mb" style="margin-top:14px">
+    <div class="ct"><i class="fa-solid fa-calendar-week"></i> Ringkasan Mingguan <span class="ct-r">7 hari terakhir</span></div>
+    <div class="sg-grid" style="grid-template-columns:repeat(4,1fr)">
+      <div class="sensor-box up" style="border-color:rgba(255,255,255,.12)"><div class="sensor-ico mi-w"><i class="fa-solid fa-oil-can"></i></div><div class="sensor-nm">Total Bio-oil</div><div class="sensor-vl" style="color:#dfe3ec">279 L</div><div class="sensor-st ok"><i class="fa-solid fa-arrow-up"></i> +6.4% vs minggu lalu</div></div>
+      <div class="sensor-box up"><div class="sensor-ico mi-g"><i class="fa-solid fa-wind"></i></div><div class="sensor-nm">Total Syngas</div><div class="sensor-vl" style="color:var(--neon)">105 m&sup3;</div><div class="sensor-st ok"><i class="fa-solid fa-arrow-up"></i> +2.1% vs minggu lalu</div></div>
+      <div class="sensor-box up"><div class="sensor-ico mi-o"><i class="fa-solid fa-fire"></i></div><div class="sensor-nm">Total Biochar</div><div class="sensor-vl" style="color:var(--orange)">94 kg</div><div class="sensor-st warn"><i class="fa-solid fa-arrow-down"></i> -1.3% vs minggu lalu</div></div>
+      <div class="sensor-box up"><div class="sensor-ico mi-b"><i class="fa-solid fa-gauge"></i></div><div class="sensor-nm">Rata-rata Suhu</div><div class="sensor-vl" style="color:var(--blue)">448°C</div><div class="sensor-st ok"><i class="fa-solid fa-check"></i> Dalam rentang target</div></div>
+    </div>
+  </div>
 </div>
 
 <!-- AI PREDIKSI -->
@@ -330,7 +419,10 @@ body.light .sb-foot p{color:#8b93a7}
 
 <!-- NOTIFIKASI -->
 <div id="pg-notif" class="pg">
-  <div class="ph"><div class="ph-l"><h1><i class="fa-solid fa-bell"></i> Notifikasi &amp; Alert</h1><p>Riwayat notifikasi sistem secara real-time</p></div></div>
+  <div class="ph"><div class="ph-l"><h1><i class="fa-solid fa-bell"></i> Notifikasi &amp; Alert</h1><p>Riwayat notifikasi sistem secara real-time</p></div>
+    <div class="ph-r"><button class="btn btn-ghost" onclick="markAllRead()"><i class="fa-solid fa-check-double"></i> Tandai Semua Dibaca</button></div>
+  </div>
+  <div class="searchbox"><i class="fa-solid fa-magnifying-glass"></i><input id="notif-search" placeholder="Cari notifikasi... (misal: suhu, tekanan, H2S)" oninput="filterNotifFull()"></div>
   <div class="glass c"><div class="notif-list" id="notif-full" style="max-height:none"></div></div>
 </div>
 
@@ -346,22 +438,42 @@ body.light .sb-foot p{color:#8b93a7}
 
 <!-- RIWAYAT -->
 <div id="pg-riwayat" class="pg">
-  <div class="ph"><div class="ph-l"><h1><i class="fa-solid fa-table-list"></i> Riwayat Produksi</h1><p>Data batch produksi sebelumnya</p></div></div>
+  <div class="ph">
+    <div class="ph-l"><h1><i class="fa-solid fa-table-list"></i> Riwayat Produksi</h1><p>Data batch produksi sebelumnya &middot; centang 2 batch untuk membandingkan</p></div>
+    <div class="ph-r"><button class="btn btn-ghost" onclick="compareBatch()"><i class="fa-solid fa-code-compare"></i> Bandingkan</button><button class="btn btn-ghost" onclick="exportCSV()"><i class="fa-solid fa-file-csv"></i> Export CSV</button></div>
+  </div>
+  <div class="glass c" style="margin-bottom:12px">
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end">
+      <div><div style="font-size:9px;color:var(--txm);font-weight:600;margin-bottom:4px">Dari Tanggal</div><input type="date" id="fl-start" class="si" style="width:135px" value="2026-06-24"></div>
+      <div><div style="font-size:9px;color:var(--txm);font-weight:600;margin-bottom:4px">Sampai Tanggal</div><input type="date" id="fl-end" class="si" style="width:135px" value="2026-07-12"></div>
+      <div><div style="font-size:9px;color:var(--txm);font-weight:600;margin-bottom:4px">Status</div>
+        <select id="fl-status" class="si" style="width:120px">
+          <option value="all">Semua</option>
+          <option value="Selesai">Selesai</option>
+          <option value="Revisi">Revisi</option>
+          <option value="Uji Coba">Uji Coba</option>
+        </select>
+      </div>
+      <button class="btn btn-neon" onclick="applyFilter()"><i class="fa-solid fa-filter"></i> Terapkan</button>
+      <button class="btn btn-ghost" onclick="resetFilter()"><i class="fa-solid fa-rotate-left"></i> Reset</button>
+      <span style="font-size:10px;color:var(--txm);margin-left:auto" id="fl-count">10 batch ditampilkan</span>
+    </div>
+  </div>
   <div class="glass c">
     <div class="tscroll">
       <table class="tbl">
-        <thead><tr><th>Batch</th><th>Tanggal</th><th>Bio-oil (L)</th><th>Syngas (m&sup3;)</th><th>Biochar (kg)</th><th>Status</th></tr></thead>
-        <tbody>
-          <tr><td><strong>#10</strong></td><td>12/07/2026</td><td>40</td><td>15</td><td>14</td><td><span class="badge bg-g">Selesai</span></td></tr>
-          <tr><td><strong>#9</strong></td><td>10/07/2026</td><td>38</td><td>14</td><td>13</td><td><span class="badge bg-g">Selesai</span></td></tr>
-          <tr><td><strong>#8</strong></td><td>08/07/2026</td><td>41</td><td>16</td><td>14</td><td><span class="badge bg-g">Selesai</span></td></tr>
-          <tr><td><strong>#7</strong></td><td>06/07/2026</td><td>37</td><td>13</td><td>12</td><td><span class="badge bg-o">Revisi</span></td></tr>
-          <tr><td><strong>#6</strong></td><td>04/07/2026</td><td>39</td><td>15</td><td>13</td><td><span class="badge bg-g">Selesai</span></td></tr>
-          <tr><td><strong>#5</strong></td><td>02/07/2026</td><td>36</td><td>14</td><td>12</td><td><span class="badge bg-g">Selesai</span></td></tr>
-          <tr><td><strong>#4</strong></td><td>30/06/2026</td><td>35</td><td>13</td><td>11</td><td><span class="badge bg-b">Uji Coba</span></td></tr>
-          <tr><td><strong>#3</strong></td><td>28/06/2026</td><td>33</td><td>12</td><td>11</td><td><span class="badge bg-g">Selesai</span></td></tr>
-          <tr><td><strong>#2</strong></td><td>26/06/2026</td><td>31</td><td>11</td><td>10</td><td><span class="badge bg-g">Selesai</span></td></tr>
-          <tr><td><strong>#1</strong></td><td>24/06/2026</td><td>28</td><td>10</td><td>9</td><td><span class="badge bg-b">Uji Coba</span></td></tr>
+        <thead><tr><th></th><th>Batch</th><th>Tanggal</th><th>Bio-oil (L)</th><th>Syngas (m&sup3;)</th><th>Biochar (kg)</th><th>Status</th></tr></thead>
+        <tbody id="riwayat-body">
+          <tr data-date="2026-07-12" data-status="Selesai" data-b="10,12/07/2026,40,15,14,Selesai"><td onclick="event.stopPropagation()"><input type="checkbox" class="cmp-chk" onclick="event.stopPropagation()"></td><td onclick="showBatch('10','12/07/2026',40,15,14,'Selesai')" style="cursor:pointer"><strong>#10</strong></td><td>12/07/2026</td><td>40</td><td>15</td><td>14</td><td><span class="badge bg-g">Selesai</span></td></tr>
+          <tr data-date="2026-07-10" data-status="Selesai" data-b="9,10/07/2026,38,14,13,Selesai"><td onclick="event.stopPropagation()"><input type="checkbox" class="cmp-chk" onclick="event.stopPropagation()"></td><td onclick="showBatch('9','10/07/2026',38,14,13,'Selesai')" style="cursor:pointer"><strong>#9</strong></td><td>10/07/2026</td><td>38</td><td>14</td><td>13</td><td><span class="badge bg-g">Selesai</span></td></tr>
+          <tr data-date="2026-07-08" data-status="Selesai" data-b="8,08/07/2026,41,16,14,Selesai"><td onclick="event.stopPropagation()"><input type="checkbox" class="cmp-chk" onclick="event.stopPropagation()"></td><td onclick="showBatch('8','08/07/2026',41,16,14,'Selesai')" style="cursor:pointer"><strong>#8</strong></td><td>08/07/2026</td><td>41</td><td>16</td><td>14</td><td><span class="badge bg-g">Selesai</span></td></tr>
+          <tr data-date="2026-07-06" data-status="Revisi" data-b="7,06/07/2026,37,13,12,Revisi"><td onclick="event.stopPropagation()"><input type="checkbox" class="cmp-chk" onclick="event.stopPropagation()"></td><td onclick="showBatch('7','06/07/2026',37,13,12,'Revisi')" style="cursor:pointer"><strong>#7</strong></td><td>06/07/2026</td><td>37</td><td>13</td><td>12</td><td><span class="badge bg-o">Revisi</span></td></tr>
+          <tr data-date="2026-07-04" data-status="Selesai" data-b="6,04/07/2026,39,15,13,Selesai"><td onclick="event.stopPropagation()"><input type="checkbox" class="cmp-chk" onclick="event.stopPropagation()"></td><td onclick="showBatch('6','04/07/2026',39,15,13,'Selesai')" style="cursor:pointer"><strong>#6</strong></td><td>04/07/2026</td><td>39</td><td>15</td><td>13</td><td><span class="badge bg-g">Selesai</span></td></tr>
+          <tr data-date="2026-07-02" data-status="Selesai" data-b="5,02/07/2026,36,14,12,Selesai"><td onclick="event.stopPropagation()"><input type="checkbox" class="cmp-chk" onclick="event.stopPropagation()"></td><td onclick="showBatch('5','02/07/2026',36,14,12,'Selesai')" style="cursor:pointer"><strong>#5</strong></td><td>02/07/2026</td><td>36</td><td>14</td><td>12</td><td><span class="badge bg-g">Selesai</span></td></tr>
+          <tr data-date="2026-06-30" data-status="Uji Coba" data-b="4,30/06/2026,35,13,11,Uji Coba"><td onclick="event.stopPropagation()"><input type="checkbox" class="cmp-chk" onclick="event.stopPropagation()"></td><td onclick="showBatch('4','30/06/2026',35,13,11,'Uji Coba')" style="cursor:pointer"><strong>#4</strong></td><td>30/06/2026</td><td>35</td><td>13</td><td>11</td><td><span class="badge bg-b">Uji Coba</span></td></tr>
+          <tr data-date="2026-06-28" data-status="Selesai" data-b="3,28/06/2026,33,12,11,Selesai"><td onclick="event.stopPropagation()"><input type="checkbox" class="cmp-chk" onclick="event.stopPropagation()"></td><td onclick="showBatch('3','28/06/2026',33,12,11,'Selesai')" style="cursor:pointer"><strong>#3</strong></td><td>28/06/2026</td><td>33</td><td>12</td><td>11</td><td><span class="badge bg-g">Selesai</span></td></tr>
+          <tr data-date="2026-06-26" data-status="Selesai" data-b="2,26/06/2026,31,11,10,Selesai"><td onclick="event.stopPropagation()"><input type="checkbox" class="cmp-chk" onclick="event.stopPropagation()"></td><td onclick="showBatch('2','26/06/2026',31,11,10,'Selesai')" style="cursor:pointer"><strong>#2</strong></td><td>26/06/2026</td><td>31</td><td>11</td><td>10</td><td><span class="badge bg-g">Selesai</span></td></tr>
+          <tr data-date="2026-06-24" data-status="Uji Coba" data-b="1,24/06/2026,28,10,9,Uji Coba"><td onclick="event.stopPropagation()"><input type="checkbox" class="cmp-chk" onclick="event.stopPropagation()"></td><td onclick="showBatch('1','24/06/2026',28,10,9,'Uji Coba')" style="cursor:pointer"><strong>#1</strong></td><td>24/06/2026</td><td>28</td><td>10</td><td>9</td><td><span class="badge bg-b">Uji Coba</span></td></tr>
         </tbody>
       </table>
     </div>
@@ -392,14 +504,74 @@ body.light .sb-foot p{color:#8b93a7}
   </div>
 </div>
 
+<!-- BANTUAN -->
+<div id="pg-bantuan" class="pg">
+  <div class="ph"><div class="ph-l"><h1><i class="fa-solid fa-circle-question"></i> Bantuan &amp; Panduan</h1><p>Cara membaca dan menggunakan dashboard PYRO-AI</p></div></div>
+  <div class="g2 mb">
+    <div class="glass c">
+      <div class="ct"><i class="fa-solid fa-gauge-high"></i> 1. Dashboard Utama</div>
+      <div style="font-size:11px;color:#dfe3ec;line-height:1.7">Berisi 4 metrik utama (suhu, tekanan, aliran gas, bio-oil) yang update tiap 5 detik, 3 gauge meter, grafik real-time, dan notifikasi terbaru. Warna kartu berubah oranye/merah jika mendekati atau melewati batas aman.</div>
+    </div>
+    <div class="glass c">
+      <div class="ct"><i class="fa-solid fa-chart-line"></i> 2. Analisis</div>
+      <div style="font-size:11px;color:#dfe3ec;line-height:1.7">Diagram alur proses pirolisis, spesifikasi teknis alat, grafik tren detail, dan ringkasan mingguan. Klik chip di atas grafik untuk menyalakan/mematikan garis tertentu.</div>
+    </div>
+    <div class="glass c">
+      <div class="ct"><i class="fa-solid fa-sliders"></i> 3. Pengaturan</div>
+      <div style="font-size:11px;color:#dfe3ec;line-height:1.7">Atur batas ambang (threshold) suhu, tekanan, dan aliran gas. Perubahan di sini memengaruhi kapan notifikasi warning/kritis muncul.</div>
+    </div>
+    <div class="glass c">
+      <div class="ct"><i class="fa-solid fa-table-list"></i> 4. Riwayat Produksi</div>
+      <div style="font-size:11px;color:#dfe3ec;line-height:1.7">Klik nomor batch untuk lihat detail. Centang 2 baris lalu klik "Bandingkan" untuk melihat grafik perbandingan hasil produksi antar batch. Bisa juga difilter per tanggal/status dan diekspor ke CSV.</div>
+    </div>
+  </div>
+  <div class="glass c mb">
+    <div class="ct"><i class="fa-solid fa-bell"></i> Arti Warna Notifikasi</div>
+    <div style="display:flex;gap:16px;flex-wrap:wrap;font-size:11px">
+      <div style="display:flex;align-items:center;gap:7px"><span style="width:12px;height:12px;border-radius:50%;background:var(--red);display:inline-block"></span> Kritis — butuh tindakan segera</div>
+      <div style="display:flex;align-items:center;gap:7px"><span style="width:12px;height:12px;border-radius:50%;background:var(--yellow);display:inline-block"></span> Warning — perlu dipantau</div>
+      <div style="display:flex;align-items:center;gap:7px"><span style="width:12px;height:12px;border-radius:50%;background:var(--neon);display:inline-block"></span> Info — kondisi normal</div>
+    </div>
+  </div>
+  <div class="glass c">
+    <div class="ct"><i class="fa-solid fa-circle-info"></i> Tips</div>
+    <div style="font-size:11px;color:#dfe3ec;line-height:1.9">
+      &bull; Aktifkan <strong>Suara Alarm</strong> atau <strong>Notif Browser</strong> di sidebar supaya tidak ketinggalan kejadian kritis walau tab tidak sedang dibuka.<br>
+      &bull; Tombol <strong>Ekspor PDF</strong> di header membuka laporan siap cetak lengkap dengan grafik.<br>
+      &bull; Semua data di dashboard ini adalah simulasi real-time untuk keperluan demo/lomba, bukan koneksi ke sensor fisik sungguhan.
+    </div>
+  </div>
+</div>
+
 </main>
 <div id="toast"><i class="fa-solid fa-circle-check"></i> <span id="tmsg"></span></div>
+<div id="modalOverlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-h"><h3 id="mdl-title">Detail Batch</h3><div class="modal-x" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></div></div>
+    <div class="modal-row"><span>Tanggal Produksi</span><span id="mdl-date">-</span></div>
+    <div class="modal-row"><span>Bio-oil</span><span id="mdl-oil">-</span></div>
+    <div class="modal-row"><span>Syngas</span><span id="mdl-gas">-</span></div>
+    <div class="modal-row"><span>Biochar</span><span id="mdl-char">-</span></div>
+    <div class="modal-row"><span>Total Yield</span><span id="mdl-total">-</span></div>
+    <div class="modal-row"><span>Status</span><span id="mdl-status">-</span></div>
+    <button class="btn btn-neon" style="width:100%;justify-content:center;margin-top:14px" onclick="closeModal()">Tutup</button>
+  </div>
+</div>
+
+<div id="cmpOverlay" onclick="if(event.target===this)closeCompare()">
+  <div class="modal" style="max-width:480px">
+    <div class="modal-h"><h3><i class="fa-solid fa-code-compare"></i> Perbandingan Batch</h3><div class="modal-x" onclick="closeCompare()"><i class="fa-solid fa-xmark"></i></div></div>
+    <div class="cw" style="height:220px"><canvas id="ch-compare"></canvas></div>
+    <div id="cmp-summary" style="margin-top:10px;font-size:10.5px;color:var(--txm)"></div>
+    <button class="btn btn-neon" style="width:100%;justify-content:center;margin-top:14px" onclick="closeCompare()">Tutup</button>
+  </div>
+</div>
 
 <script>
 Chart.defaults.font.family="'Inter',sans-serif";
 Chart.defaults.color='#8b93a7';
 
-const titles={dash:'Dashboard Utama',trend:'Grafik Trend Real-Time',ai:'Prediksi AI',notif:'Notifikasi & Alert',sensor:'Status Sensor',riwayat:'Riwayat Produksi'};
+const titles={dash:'Dashboard Utama',trend:'Grafik Trend Real-Time',ai:'Prediksi AI',notif:'Notifikasi & Alert',sensor:'Status Sensor',riwayat:'Riwayat Produksi',bantuan:'Bantuan & Panduan',cfg:'Pengaturan Threshold'};
 function go(id,el){
   document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
   document.querySelectorAll('.nav').forEach(n=>n.classList.remove('on'));
@@ -421,7 +593,53 @@ function markAllRead(){
   document.getElementById('nb').textContent='(0)';
   toast('Semua notifikasi ditandai sudah dibaca.');
 }
-function exportPDF(){toast('Laporan PDF sedang disiapkan... (memerlukan backend server)');}
+function exportPDF(){
+  const n=new Date();
+  const critList=notifs.filter(x=>x.lvl==='crit'||x.lvl==='warn').slice(0,8);
+  const rows=critList.length?critList.map(x=>`<tr><td>${x.ts}</td><td>${x.lvl==='crit'?'KRITIS':'WARNING'}</td><td>${x.txt.replace(/<[^>]*>/g,'')}</td></tr>`).join(''):'<tr><td colspan="3" style="text-align:center;color:#888">Tidak ada kejadian kritis/warning tercatat.</td></tr>';
+  let chartImg='';
+  try{ chartImg=cTmp.toBase64Image(); }catch(e){}
+  const win=window.open('','_blank');
+  win.document.write(`<!DOCTYPE html><html lang="id"><head><meta charset="UTF-8"><title>Laporan PYRO-AI</title>
+  <style>
+  body{font-family:Arial,Helvetica,sans-serif;color:#111;padding:32px;max-width:760px;margin:auto}
+  h1{font-size:20px;margin-bottom:2px}
+  .sub{color:#666;font-size:11px;margin-bottom:20px}
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:22px}
+  .card{border:1px solid #ddd;border-radius:8px;padding:10px}
+  .card .lb{font-size:9px;color:#888;text-transform:uppercase;letter-spacing:.5px}
+  .card .v{font-size:18px;font-weight:700;margin-top:3px}
+  table{width:100%;border-collapse:collapse;font-size:11px;margin-top:6px}
+  th,td{border:1px solid #ddd;padding:6px 8px;text-align:left}
+  th{background:#f3f3f3}
+  h2{font-size:13px;margin:22px 0 8px;border-bottom:2px solid #ff6b00;padding-bottom:4px}
+  .foot{margin-top:26px;font-size:9.5px;color:#999}
+  img.chart{width:100%;border:1px solid #ddd;border-radius:8px;margin-top:6px;background:#0e1512}
+  @media print{ .noprint{display:none} }
+  </style></head><body>
+  <h1>🔥 Laporan Monitoring PYRO-AI</h1>
+  <div class="sub">Dicetak pada ${n.toLocaleString('id-ID')} &middot; Sistem Monitoring Pirolisis Kotoran Ayam</div>
+  <div class="grid">
+    <div class="card"><div class="lb">Suhu Reaktor</div><div class="v">${S.tmp.toFixed(0)}°C</div></div>
+    <div class="card"><div class="lb">Tekanan Reaktor</div><div class="v">${S.prs.toFixed(1)} atm</div></div>
+    <div class="card"><div class="lb">Aliran Gas</div><div class="v">${S.flw.toFixed(1)} m³/j</div></div>
+    <div class="card"><div class="lb">Bio-oil</div><div class="v">${S.oil.toFixed(1)} L</div></div>
+  </div>
+  ${chartImg?`<h2>Grafik Suhu Reaktor (Snapshot Live)</h2><img class="chart" src="${chartImg}">`:''}
+  <h2>Prediksi AI 24 Jam</h2>
+  <table><tr><th>Produk</th><th>Estimasi</th><th>Status</th></tr>
+  <tr><td>Bio-oil</td><td>42.5 kg</td><td>ON TRACK (94.7%)</td></tr>
+  <tr><td>Syngas</td><td>18.2 m³</td><td>WARNING (88.3%)</td></tr>
+  <tr><td>Biochar</td><td>15.8 kg</td><td>STABIL (91.2%)</td></tr>
+  </table>
+  <h2>Kejadian Kritis &amp; Warning Terbaru</h2>
+  <table><tr><th>Waktu</th><th>Level</th><th>Keterangan</th></tr>${rows}</table>
+  <div class="foot">PYRO-AI Monitoring Dashboard v1.0 &middot; Laporan dibuat otomatis dari data sesi berjalan &middot; — Farid</div>
+  <button class="noprint" onclick="window.print()" style="margin-top:18px;padding:8px 16px;background:#ff6b00;color:#fff;border:none;border-radius:6px;font-weight:700;cursor:pointer">🖨️ Cetak / Simpan sebagai PDF</button>
+  </body></html>`);
+  win.document.close();
+  toast('Laporan dibuka di tab baru — klik "Cetak / Simpan sebagai PDF".');
+}
 function toggleSB(){document.getElementById('sb').classList.toggle('open');document.getElementById('overlay').classList.toggle('show');}
 function closeSB(){document.getElementById('sb').classList.remove('open');document.getElementById('overlay').classList.remove('show');}
 
@@ -433,6 +651,77 @@ function toggleMode(){
 }
 
 function toast(msg){const el=document.getElementById('toast');document.getElementById('tmsg').textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),3000);}
+
+function showBatch(no,date,oil,gas,ch,status){
+  sel('mdl-title','Detail Batch #'+no);
+  sel('mdl-date',date);sel('mdl-oil',oil+' L');sel('mdl-gas',gas+' m&sup3;');sel('mdl-char',ch+' kg');
+  sel('mdl-total',(oil+gas+ch).toFixed(1)+' unit gabungan');sel('mdl-status',status);
+  document.getElementById('modalOverlay').classList.add('show');
+}
+function closeModal(){document.getElementById('modalOverlay').classList.remove('show');}
+
+let cmpChart=null;
+function compareBatch(){
+  const checked=[...document.querySelectorAll('.cmp-chk:checked')];
+  if(checked.length!==2){toast('Pilih tepat 2 batch (centang checkbox) untuk dibandingkan.');return;}
+  const data=checked.map(c=>c.closest('tr').dataset.b.split(','));
+  const [a,b]=data;
+  const labels=['Bio-oil (L)','Syngas (m³)','Biochar (kg)'];
+  const ctx=document.getElementById('ch-compare').getContext('2d');
+  if(cmpChart)cmpChart.destroy();
+  cmpChart=new Chart(ctx,{type:'bar',data:{labels,datasets:[
+    {label:'Batch #'+a[0]+' ('+a[1]+')',data:[+a[2],+a[3],+a[4]],backgroundColor:'rgba(61,255,160,.7)',borderRadius:4},
+    {label:'Batch #'+b[0]+' ('+b[1]+')',data:[+b[2],+b[3],+b[4]],backgroundColor:'rgba(255,122,41,.7)',borderRadius:4}
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{font:{size:9},color:'#8b93a7'}}},scales:{x:{grid:{display:false},ticks:{font:{size:9}}},y:{grid:{color:'rgba(255,255,255,.05)'},ticks:{font:{size:9}}}}}});
+  const diffOil=(+a[2]-+b[2]).toFixed(1);
+  document.getElementById('cmp-summary').innerHTML=`Batch #${a[0]} menghasilkan bio-oil ${diffOil>=0?diffOil+' L lebih banyak':Math.abs(diffOil)+' L lebih sedikit'} dibanding Batch #${b[0]}.`;
+  document.getElementById('cmpOverlay').classList.add('show');
+}
+function closeCompare(){document.getElementById('cmpOverlay').classList.remove('show');}
+
+let soundOn=false,audioCtx=null;
+function toggleSound(){
+  soundOn=!soundOn;
+  document.getElementById('strack').classList.toggle('dark',soundOn);
+  toast(soundOn?'Suara alarm diaktifkan.':'Suara alarm dimatikan.');
+}
+function beepAlarm(){
+  if(!soundOn)return;
+  try{
+    if(!audioCtx)audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+    const o=audioCtx.createOscillator(),g=audioCtx.createGain();
+    o.type='sine';o.frequency.value=880;o.connect(g);g.connect(audioCtx.destination);
+    g.gain.setValueAtTime(.001,audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(.12,audioCtx.currentTime+.02);
+    g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+.28);
+    o.start();o.stop(audioCtx.currentTime+.3);
+  }catch(e){}
+}
+
+let pushOn=false;
+function togglePush(){
+  if(!('Notification' in window)){toast('Browser ini tidak mendukung notifikasi.');return;}
+  if(!pushOn){
+    Notification.requestPermission().then(p=>{
+      if(p==='granted'){pushOn=true;document.getElementById('ptrack').classList.add('dark');toast('Notifikasi browser diaktifkan.');}
+      else{toast('Izin notifikasi ditolak browser.');}
+    });
+  }else{
+    pushOn=false;document.getElementById('ptrack').classList.remove('dark');toast('Notifikasi browser dimatikan.');
+  }
+}
+function pushAlarm(txt){
+  if(!pushOn||!('Notification' in window)||Notification.permission!=='granted')return;
+  try{ new Notification('🔥 PYRO-AI Alert',{body:txt.replace(/<[^>]*>/g,''),icon:''}); }catch(e){}
+}
+
+function filterNotifFull(){
+  const q=document.getElementById('notif-search').value.toLowerCase();
+  document.querySelectorAll('#notif-full .notif').forEach(el=>{
+    const txt=el.querySelector('.notif-txt').textContent.toLowerCase();
+    el.style.display=txt.includes(q)?'':'none';
+  });
+}
 
 function tickClock(){const n=new Date();document.getElementById('clk').textContent=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0')+':'+String(n.getSeconds()).padStart(2,'0');}
 setInterval(tickClock,1000);tickClock();
@@ -447,6 +736,7 @@ function addNotif(txt,lvl){
   notifs.unshift({txt,lvl,ts});
   if(notifs.length>60)notifs.pop();
   renderNotifs();
+  if(lvl==='crit'||lvl==='warn'){beepAlarm();pushAlarm(txt);}
 }
 function iconFor(lvl){return lvl==='crit'?'fa-triangle-exclamation':lvl==='warn'?'fa-circle-exclamation':'fa-circle-check';}
 function renderNotifs(){
@@ -457,6 +747,7 @@ function renderNotifs(){
   document.getElementById('notif-cnt').textContent=notifs.length;
   const crit=notifs.filter(n=>n.lvl==='crit'||n.lvl==='warn').length;
   document.getElementById('nb').textContent='('+crit+')';
+  const sEl=document.getElementById('notif-search');if(sEl&&sEl.value)filterNotifFull();
 }
 addNotif('Suhu reaktor naik mendekati batas maksimal (680&deg;C)','warn');
 addNotif('Tekanan stabil dalam rentang aman','info');
@@ -540,6 +831,37 @@ function refreshData(){
 
 function saveCfg(){toast('Threshold berhasil disimpan.');}
 
+function applyFilter(){
+  const start=document.getElementById('fl-start').value,end=document.getElementById('fl-end').value,st=document.getElementById('fl-status').value;
+  const rows=document.querySelectorAll('#riwayat-body tr');let shown=0;
+  rows.forEach(r=>{
+    const d=r.dataset.date,s=r.dataset.status;
+    const inRange=(!start||d>=start)&&(!end||d<=end);
+    const okSt=(st==='all'||s===st);
+    const show=inRange&&okSt;
+    r.style.display=show?'':'none';
+    if(show)shown++;
+  });
+  document.getElementById('fl-count').textContent=shown+' batch ditampilkan';
+  toast('Filter diterapkan: '+shown+' batch cocok.');
+}
+function resetFilter(){
+  document.getElementById('fl-start').value='2026-06-24';
+  document.getElementById('fl-end').value='2026-07-12';
+  document.getElementById('fl-status').value='all';
+  document.querySelectorAll('#riwayat-body tr').forEach(r=>r.style.display='');
+  document.getElementById('fl-count').textContent='10 batch ditampilkan';
+  toast('Filter direset.');
+}
+function exportCSV(){
+  const rows=[...document.querySelectorAll('#riwayat-body tr')].filter(r=>r.style.display!=='none');
+  let csv='Batch,Tanggal,Bio-oil (L),Syngas (m3),Biochar (kg),Status\n';
+  rows.forEach(r=>{const c=r.querySelectorAll('td');csv+=[...c].map(x=>x.textContent.trim()).join(',')+'\n';});
+  const blob=new Blob([csv],{type:'text/csv'});const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download='riwayat_produksi_pyroai.csv';a.click();URL.revokeObjectURL(url);
+  toast('CSV berhasil diunduh ('+rows.length+' baris).');
+}
+
 let lastHourSnap={tmp:450,prs:1.2,flw:8.5,oil:42.3},hourTick=0;
 function updateTrend(){
   hourTick++;
@@ -581,6 +903,8 @@ function updateAll(force){
   gPrs.data.datasets[0].data=[S.prs,2-S.prs];gPrs.update('none');
   gFlw.data.datasets[0].data=[S.flw,15-S.flw];gFlw.update('none');
   sel('gg-tmp-v',S.tmp.toFixed(0)+'°C');sel('gg-prs-v',S.prs.toFixed(1)+' atm');sel('gg-flw-v',S.flw.toFixed(1)+' m&sup3;/jam');
+  sel('fnode-reactor-s',S.tmp.toFixed(0)+'&deg;C tanpa O&#8322;');
+  const fnode=document.getElementById('fnode-reactor');if(fnode)fnode.className='fc '+(tCrit?'fc-o':tWarn?'fc-o':'fc-o');
 
   if(tCrit&&(force||Math.random()<.5))addNotif('Suhu reaktor kritis: '+S.tmp.toFixed(0)+'&deg;C — melebihi batas maksimal ('+TMAX+'&deg;C)','crit');
   else if(tWarn&&(force||Math.random()<.3))addNotif('Suhu reaktor naik mendekati batas maksimal ('+TMAX+'&deg;C), saat ini '+S.tmp.toFixed(0)+'&deg;C','warn');
@@ -590,6 +914,37 @@ function updateAll(force){
 }
 updateAll(true);
 setInterval(updateAll,5000);
+
+// AMBIENT PARTICLES
+(function(){
+  const cv=document.getElementById('particles');if(!cv)return;
+  const ctx=cv.getContext('2d');
+  function resize(){cv.width=window.innerWidth;cv.height=window.innerHeight;}
+  resize();window.addEventListener('resize',resize);
+  const colors=['61,255,160','255,122,41','61,165,255'];
+  const N=38;
+  const parts=Array.from({length:N},()=>({
+    x:Math.random()*cv.width,y:Math.random()*cv.height+cv.height*.3,
+    r:1+Math.random()*2,spd:.15+Math.random()*.4,
+    drift:(Math.random()-.5)*.3,
+    c:colors[Math.floor(Math.random()*colors.length)],
+    a:.15+Math.random()*.35
+  }));
+  function tick(){
+    ctx.clearRect(0,0,cv.width,cv.height);
+    parts.forEach(p=>{
+      p.y-=p.spd;p.x+=p.drift;
+      if(p.y<-10){p.y=cv.height+10;p.x=Math.random()*cv.width;}
+      if(p.x<-10)p.x=cv.width+10;if(p.x>cv.width+10)p.x=-10;
+      ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle='rgba('+p.c+','+p.a+')';
+      ctx.shadowColor='rgba('+p.c+',.8)';ctx.shadowBlur=6;
+      ctx.fill();
+    });
+    requestAnimationFrame(tick);
+  }
+  tick();
+})();
 </script>
 </body>
 </html>
